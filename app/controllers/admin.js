@@ -2,7 +2,10 @@ var Controller = require('../../lib/controller'),
 	_ = require('underscore'),
 	conf = require('../../conf');
 
-var users = require('../collections/users');
+_.str = require('underscore.string');
+
+var users = require('../collections/users'),
+	events = require('../collections/events');
 
 var adminController = Controller({
 	path : "admin"
@@ -36,6 +39,45 @@ adminController.get('/users', function (req, res) {
 	users.fetch(function(err, data){
 		res.render('admin/users',{
 			users : data
+		});
+	});
+});
+
+adminController.get('/events', function (req, res) {
+	events.fetch(function(err, data){
+		res.render('admin/events',{
+			events : data
+		});
+	});
+});
+
+adminController.get('/events/new', function (req, res) {
+	res.render('admin/events-edit',{
+		event : {}
+	});
+});
+
+adminController.post('/events/new', function (req, res) {
+	req.body.slug = _.str.slugify(req.body.name);
+	events.put(req.body.slug, req.body, function (err) {
+		res.redirect('/admin/events/edit/'+req.body.slug);
+	});
+});
+
+adminController.get('/events/edit/:slug', function (req, res) {
+	events.get(req.params.slug, function (err, data) {
+		res.render('admin/events-edit',{
+			event : data
+		});
+	});
+});
+
+adminController.post('/events/edit/:slug', function (req, res) {
+	events.get(req.params.slug, function (err, data) {
+		data = _.extend(data, req.body);
+
+		events.put(req.params.slug, data, function (err) {
+			res.redirect('/admin/events/edit/'+data.slug);
 		});
 	});
 });

@@ -1,3 +1,5 @@
 .main{margin-top:75px;margin-bottom:20px;}
-.main .list{border-bottom:1px solid #d3d3d3;padding-bottom:10px}
+.main .list{padding-top:10px;border-bottom:1px solid #d3d3d3;padding-bottom:10px}
+.main .button-container{padding-top:10px;padding-bottom:10px}
 .avatar{height:18px;padding-top:10px;padding-bottom:10px}
+.right{text-align:right}
