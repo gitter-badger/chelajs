@@ -1,0 +1,29 @@
+{% extends '../layout.html' %}
+
+{% block title %}{% endblock %}
+
+{% block head %}
+	{% parent %}
+{% endblock %}
+
+{% block content %}
+	<div class="main first-container">
+		<div class="container">
+			<div class="row ">
+				<div class="col-md-7">
+					<h1>{{event.name}}</h1>
+					{% autoescape false %}
+					<p>{{event.description}}</p>
+					{% endautoescape %}
+				</div>
+				<div class="col-md-5">
+					{% if user %}
+						<p>Que framework quieres representar?</p>
+					{% else %}
+						<p>Haz log in para elegir un framework a representar</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

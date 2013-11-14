@@ -61,6 +61,9 @@ githubConnection(server);
 
 // Controllers
 var adminController = require('./app/controllers/admin');
+var eventsController = require('./app/controllers/events');
+
 adminController(server);
+eventsController(server);
 
 server.listen(3000);
