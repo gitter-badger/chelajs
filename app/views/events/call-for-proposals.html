@@ -17,10 +17,20 @@
 					{% endautoescape %}
 				</div>
 				<div class="col-md-5">
-					{% if user %}
-						<p>Que framework quieres representar?</p>
+					{% if talkSend %}
+						<h4>Gracias por enviar tu platica, <a href="http://twitter.com/siedrix">@siedrix</a> te contactara pronto.</h4>
+					{% elseif user %}
+						<form class="call-for-proposals" action="/eventos/{{event.slug}}/call-for-proposals" method="POST">
+							<h4>¿Que framework quieres representar?</h4>
+							<p>Yo {{user.username}} quiero representar a <input name="framework" type="text"/></p>
+							<p>¿En que sitios lo haz usado en produccion?</p>
+							<p><textarea name="sites"></textarea></p>
+							<p>Cuenta un poco de la experiencia con este MV*</p>
+							<p><textarea name="experience"></textarea></p>
+							<p class="right"><button class="btn btn-primary btn-lg">Enviar propuesta &raquo;</button></p>
+						</form>
 					{% else %}
-						<p>Haz log in para elegir un framework a representar</p>
+						<p>Haz log in para elegir un framework a representar <i class="fa fa-long-arrow-up" style="font-size:30px"></i></p>		
 					{% endif %}
 				</div>
 			</div>
