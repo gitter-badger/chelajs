@@ -1,0 +1,26 @@
+{% extends '../layout.html' %}
+
+{% block title %}{% endblock %}
+
+{% block head %}
+	{% parent %}
+
+	<link rel="stylesheet" href="/css/admin.css">
+{% endblock %}
+
+{% block content %}
+	<div class="main">
+		<div class="container">
+			<div class="row right">
+				<a href="/admin/events/new" class="btn btn-primary btn-lg" role="button">New event &raquo;</a>
+			</div>
+			{% for event in events %}
+			<div class="row list">
+				<div class="col-md-3">
+					<a href="/admin/events/edit/{{ event.slug }}">{{ event.name }}</a>
+				</div>	
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+{% endblock %}

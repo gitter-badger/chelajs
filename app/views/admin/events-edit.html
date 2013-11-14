@@ -1,0 +1,38 @@
+{% extends '../layout.html' %}
+
+{% block title %}{% endblock %}
+
+{% block head %}
+	{% parent %}
+
+	<link rel="stylesheet" href="/css/admin.css">
+{% endblock %}
+
+{% block content %}
+	<div class="main">
+		<div class="container">
+			<form method="POST">
+				<h1>Create new event</h1>
+				<div class="row list">
+					<div class="col-sm-2">
+						<span>Name</span>
+					</div>
+					<div class="col-sm-10">
+						<input type="text" name="name" value="{{ event.name }}"/>
+					</div>
+				</div>
+				<div class="row list">
+					<div class="col-sm-2">
+						<span>Date</span>
+					</div>
+					<div class="col-sm-10">
+						<input type="text" name="date" value="{{ event.date }}"/>
+					</div>
+				</div>
+				<div class="row right button-container">
+					<button class="btn btn-primary btn-lg">Create event &raquo;</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock %}
