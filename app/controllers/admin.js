@@ -5,7 +5,8 @@ var Controller = require('../../lib/controller'),
 _.str = require('underscore.string');
 
 var users = require('../collections/users'),
-	events = require('../collections/events');
+	events = require('../collections/events'),
+	talks = require('../collections/talks');
 
 var adminController = Controller({
 	path : "admin"
@@ -78,6 +79,14 @@ adminController.post('/events/edit/:slug', function (req, res) {
 
 		events.put(req.params.slug, data, function (err) {
 			res.redirect('/admin/events/edit/'+data.slug);
+		});
+	});
+});
+
+adminController.get('/talks', function (req, res) {
+	talks.fetch(function(err, data){
+		res.render('admin/talks',{
+			talks : data
 		});
 	});
 });

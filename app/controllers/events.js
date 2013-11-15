@@ -14,11 +14,12 @@ var eventsController = Controller({
 
 eventsController.get('/:slug', function (req, res) {
 	events.get(req.params.slug, function (err, event) {
-		console.log('Events:',event.name, event.stage );
 		if(!event){
 			res.send(404);
 			return;
 		}
+
+		console.log('Events:',event.name, event.stage );
 
 		if(event.stage === 'Call for proposals'){
 			var data = {
