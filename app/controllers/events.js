@@ -19,8 +19,6 @@ eventsController.get('/:slug', function (req, res) {
 			return;
 		}
 
-		console.log('Events:',event.name, event.stage );
-
 		if(event.stage === 'Call for proposals'){
 			var data = {
 				event : event,
