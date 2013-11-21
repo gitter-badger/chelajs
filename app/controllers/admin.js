@@ -1,4 +1,4 @@
-var Controller = require('../../lib/controller'),
+var controller = require('../../lib/controller'),
 	_ = require('underscore'),
 	conf = require('../../conf');
 
@@ -8,20 +8,16 @@ var users = require('../collections/users'),
 	events = require('../collections/events'),
 	talks = require('../collections/talks');
 
-var adminController = Controller({
-	path : "admin"
+var adminController = controller({
+	path : 'admin'
 });
 
 adminController.beforeEach(function(req, res, next){
 	req.data = {};
 
-	res._render = res.render;
-	res.render = function(view, data){
-		data = data || {};
-		data = _.extend(data, req.data);
-
-		res._render(view, data);
-	};
+	adminController;
+	debugger;
+	console.log('req.data',req.data);
 
 	// Validates that user is an admin in the conf file
 	if(req.session && req.session.passport && req.session.passport.user && conf.admins.indexOf(req.session.passport.user.username) >= 0){
@@ -60,7 +56,7 @@ adminController.get('/events/new', function (req, res) {
 
 adminController.post('/events/new', function (req, res) {
 	req.body.slug = _.str.slugify(req.body.name);
-	events.put(req.body.slug, req.body, function (err) {
+	events.put(req.body.slug, req.body, function () {
 		res.redirect('/admin/events/edit/'+req.body.slug);
 	});
 });
@@ -77,7 +73,7 @@ adminController.post('/events/edit/:slug', function (req, res) {
 	events.get(req.params.slug, function (err, data) {
 		data = _.extend(data, req.body);
 
-		events.put(req.params.slug, data, function (err) {
+		events.put(req.params.slug, data, function () {
 			res.redirect('/admin/events/edit/'+data.slug);
 		});
 	});

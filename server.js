@@ -42,13 +42,6 @@ passport.deserializeUser(function(obj, done) {
 	done(null, obj);
 });
 
-// Server routes
-server.get('/', function (req, res) {
-	res.render('home',{
-		user : req.session.passport.user
-	});
-});
-
 server.get('/log-out', function (req, res) {
 	req.session.destroy();
 
@@ -60,9 +53,11 @@ var githubConnection = require('./app/connections/github');
 githubConnection(server);
 
 // Controllers
+var homeController = require('./app/controllers/home');
 var adminController = require('./app/controllers/admin');
 var eventsController = require('./app/controllers/events');
 
+homeController(server);
 adminController(server);
 eventsController(server);
 

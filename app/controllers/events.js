@@ -1,6 +1,6 @@
-var Controller = require('../../lib/controller'),
+var controller = require('../../lib/controller'),
 	_ = require('underscore'),
-	conf = require('../../conf');
+	config = require('../../conf');
 
 _.str = require('underscore.string');
 
@@ -8,8 +8,14 @@ var users = require('../collections/users'),
 	events = require('../collections/events'),
 	talks = require('../collections/talks');
 
-var eventsController = Controller({
+var eventsController = controller({
 	path : 'eventos'
+});
+
+eventsController.beforeEach(function(req, res, next){
+	req.data.analytics = config.analytics || '';
+
+	next();
 });
 
 eventsController.get('/:slug', function (req, res) {
@@ -25,7 +31,7 @@ eventsController.get('/:slug', function (req, res) {
 				user : req.session.passport.user
 			};
 
-			if(req.query["talk-send"] ){
+			if(req.query['talk-send'] ){
 				data.talkSend = true;
 			}
 
@@ -54,12 +60,12 @@ eventsController.post('/:slug/call-for-proposals', function (req, res) {
 			approved : false
 		};
 
-		var talkId = event.slug + ":" + req.session.passport.user.username + ":" + req.body.framework;
+		var talkId = event.slug + ':' + req.session.passport.user.username + ':' + req.body.framework;
 
 		talk.id = talkId;
 
 		talks.put(talkId,talk,function(){
-			res.redirect('/eventos/'+ event.slug + "?talk-send=success");
+			res.redirect('/eventos/'+ event.slug + '?talk-send=success');
 		});
 	});
 });
