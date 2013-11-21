@@ -11,6 +11,7 @@
 	<link rel="stylesheet" href="/css/main.css">
 	{% block head %}
 	{% endblock %}
+	{% autoescape false %}{{ analytics }}{% endautoescape %}
 </head>
 <body>
 	<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -55,6 +56,5 @@
 			</div>
 		</div>
 	</div>
-	{% autoescape false %}{{ analytics }}{% endautoescape %}
 </body>
 </html>
