@@ -23,7 +23,8 @@ server.use(express.static('./public'));
 server.configure(function() {
 	server.use(express.logger());
 	server.use(express.cookieParser());
-	server.use(express.bodyParser());
+	server.use(express.json());
+	server.use(express.urlencoded());
 
 	server.use(express.session({
 		store: new LevelStore(),
@@ -62,3 +63,4 @@ adminController(server);
 eventsController(server);
 
 server.listen(3000);
+
