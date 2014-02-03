@@ -1,20 +1,12 @@
-var collections = require('../../lib/collection');
+var Backbone = require('../../lib/Backbone');
 
-var events = collections.sublevel('events');
+var EventsModel = Backbone.Model.extend({
+	dbName : 'events'
+});
 
-events.fetch = function (callback) {
-	var eventsArray = [];
+var Events = Backbone.Collection.extend({
+	dbName : 'events',
+	model : EventsModel
+});
 
-	events.createValueStream()
-	.on('data', function(data){
-		eventsArray.push(data);
-	})
-	.on('end', function(){
-		callback(null, eventsArray);
-	})
-	.on('error', function(err){
-		callback(err, null);
-	});
-};
-
-module.exports = events;
+module.exports = Events;

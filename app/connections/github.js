@@ -2,7 +2,7 @@ var passport = require('passport'),
 	GitHubStrategy = require('passport-github').Strategy,
 	conf = require('../../conf');
 
-var users = require('../collections/users');
+var Users = require('../collections/users');
 
 var connection = function (server) {
 	passport.use(new GitHubStrategy({
@@ -11,22 +11,34 @@ var connection = function (server) {
 			callbackURL: conf.github.callbackURL
 		},
 		function(accessToken, refreshToken, profile, done) {
-			// Profile
-			profile.provider = "github";
-			profile.accessToken = accessToken;
-			profile.data = profile._json;
-			delete profile._raw;
-			delete profile._json;
+			var users = new Users();
 
-			console.log('Creating', profile.username);
+			var q = users.fetchOne(function(item){
+				return item.provider === 'github' && item.username === profile.username;
+			});
 
-			users.put(profile.username, profile, function (err) {
-				if(err){
-					done(err, null);
-					return;
+			q.then(function (user) {
+				if(user){
+					console.log('Log in user');
+					done(null, user.toJSON() );
+				}else{
+					profile.username = profile.username;
+					profile.provider = 'github';
+					profile.accessToken = accessToken;
+					profile.data = profile._json;
+					delete profile._raw;
+					delete profile._json;
+
+					var newUser = users.add(profile);
+
+					var q = newUser.save();
+
+					q.then(function(){
+						done(null, newUser.toJSON() );
+					}).fail(function(err){
+						done(err);
+					});
 				}
-
-				return done(null, profile);
 			});
 		}
 	));

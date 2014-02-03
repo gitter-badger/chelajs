@@ -4,8 +4,8 @@ var controller = require('../../lib/controller'),
 
 _.str = require('underscore.string');
 
-var users = require('../collections/users'),
-	events = require('../collections/events'),
+var Users = require('../collections/users'),
+	Events = require('../collections/events'),
 	talks = require('../collections/talks');
 
 var adminController = controller({
@@ -28,17 +28,23 @@ adminController.get('', function (req, res) {
 });
 
 adminController.get('/users', function (req, res) {
-	users.fetch(function(err, data){
+	var users = new Users();
+	var q = users.fetch();
+
+	q.then(function(){
 		res.render('admin/users',{
-			users : data
+			users : users.toJSON()
 		});
 	});
 });
 
 adminController.get('/events', function (req, res) {
-	events.fetch(function(err, data){
+	var events = new Events();
+
+	var q = events.fetch();
+	q.then(function(){
 		res.render('admin/events',{
-			events : data
+			events : events.toJSON()
 		});
 	});
 });
@@ -50,17 +56,50 @@ adminController.get('/events/new', function (req, res) {
 });
 
 adminController.post('/events/new', function (req, res) {
-	req.body.slug = _.str.slugify(req.body.name);
-	events.put(req.body.slug, req.body, function () {
-		res.redirect('/admin/events/edit/'+req.body.slug);
+	var events = new Events();
+	var slug = _.str.slugify(req.body.name);
+
+	var q = events.fetchOne(function(item){
+		return item.slug === slug
+	});	
+
+	q.then(function(model){
+		if(events.length > 0){
+			res.send('Error: Event already exist');
+		}
+
+		req.body.slug = slug;
+		var vent = events.add(req.body);
+
+		var q = vent.save();
+
+		q.then(function(){
+			res.redirect('/admin/events/edit/'+vent.get('slug'));
+		}).fail(function(err){
+			res.send(500, err);
+		});		
 	});
 });
 
 adminController.get('/events/edit/:slug', function (req, res) {
-	events.get(req.params.slug, function (err, data) {
+	var events = new Events();
+
+	var q = events.fetchOne(function(item){
+		return item.slug === req.params.slug;
+	});
+
+	q.then(function(vent){
+		if(!vent){
+			res.send(404, 'Event doesnt exist');
+		}
+
 		res.render('admin/events-edit',{
-			event : data
+			event : vent.toJSON()
 		});
+	});
+
+	q.fail(function(err){
+		res.send(500, err);
 	});
 });
 

@@ -1,20 +1,12 @@
-var collections = require('../../lib/collection');
+var Backbone = require('../../lib/Backbone');
 
-var users = collections.sublevel('users');
+var UserModel = Backbone.Model.extend({
+	dbName : 'users'
+});
 
-users.fetch = function (callback) {
-	var usersArray = [];
-
-	users.createValueStream()
-	.on('data', function(data){
-		usersArray.push(data);
-	})
-	.on('end', function(){
-		callback(null, usersArray);
-	})
-	.on('error', function(err){
-		callback(err, null);
-	});
-};
+var users = Backbone.Collection.extend({
+	dbName : 'users',
+	model : UserModel
+});
 
 module.exports = users;
