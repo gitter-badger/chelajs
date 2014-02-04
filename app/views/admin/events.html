@@ -10,17 +10,62 @@
 
 {% block content %}
 	<div class="main">
-		<div class="container">
+		<div class="container events">
 			<div class="row right">
 				<a href="/admin/events/new" class="btn btn-primary btn-lg" role="button">New event &raquo;</a>
 			</div>
 			{% for event in events %}
 			<div class="row list">
-				<div class="col-md-3">
+				<div class="col-md-3 event" data-slug="{{event.slug}}">
+					<button class="btn {% if event.current %}btn-primary btn-current{% else %}btn-default has-spinner set-as-current{% endif %}">
+						<span class="spinner">
+							<i class="fa fa-spin fa-refresh"></i>
+						</span>
+						Set as current
+					</button>
 					<a href="/admin/events/edit/{{ event.slug }}">{{ event.name }}</a>
-				</div>	
+				</div>
 			</div>
 			{% endfor %}
 		</div>
 	</div>
+{% endblock %}
+
+{% block head %}
+<style>
+{# http://jsfiddle.net/AndrewDryga/zcX4h/1/ #}
+	.spinner {
+		display: inline-block;
+		opacity: 0;
+		width: 0;
+		transition: opacity 0.25s, width 0.25s;
+	}
+	.has-spinner.active .spinner {
+		opacity: 1;
+		width: 16px;
+	}
+</style>
+{% endblock %}
+
+{% block js %}
+<script src="/js/vendors/jquery.2.0.3.min.js"></script>
+<script>
+	$('.events').on('click', '.btn-default.set-as-current', function (e){
+		var $this = $(this);
+		var slug = $this.closest('.event').data('slug')
+		$this.closest('.events').find('.btn-current')
+			.removeClass('btn-current btn-primary').addClass('btn-default has-spinner set-as-current')
+		$this.addClass('active')
+
+		var xhr = $.post('/admin/events/set-as-current', {slug: slug})
+		xhr.always(function(){
+			$this.removeClass('active')
+		})
+		xhr.then(function(){
+			$this.removeClass('btn-default has-spinner set-as-current').addClass('btn-primary btn-current')
+		}, function(){
+
+		})
+	})
+</script>
 {% endblock %}
