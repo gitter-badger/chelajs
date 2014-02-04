@@ -1,20 +1,12 @@
-var collections = require('../../lib/collection');
+var Backbone = require('../../lib/Backbone');
 
-var talks = collections.sublevel('talks');
+var TalksModel = Backbone.Model.extend({
+	dbName : 'talks'
+});
 
-talks.fetch = function (callback) {
-	var talksArray = [];
+var Talks = Backbone.Collection.extend({
+	dbName : 'talks',
+	model : TalksModel
+});
 
-	talks.createValueStream()
-	.on('data', function(data){
-		talksArray.push(data);
-	})
-	.on('end', function(){
-		callback(null, talksArray);
-	})
-	.on('error', function(err){
-		callback(err, null);
-	});
-};
-
-module.exports = talks;
+module.exports = Talks;
