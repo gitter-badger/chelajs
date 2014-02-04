@@ -6,6 +6,7 @@ body{text-align:justify;padding:60px 0 20px 0}
 .navbar .navbar-text .log-out:hover{color:#b3b3b3;text-decoration:none}
 .jumbotron{padding-top:54px;}
 .jumbotron p{width:25em}
+.jumbotron .next-event > div{line-height:28px;margin-bottom:12px}
 .main{padding-bottom:48px}
 .right{text-align:right}
 .first-container{padding-top:70px}
