@@ -18,7 +18,9 @@
 					<span>{{ user.username }}</span>
 				</div>
 				<div class="col-md-7">
-					{{ user.emails[0].value }}
+					{% if user.emails[0]. == null %}
+						{{ user.emails[0].value }}
+					{% endif %}
 				</div>				
 			</div>
 			{% endfor %}
