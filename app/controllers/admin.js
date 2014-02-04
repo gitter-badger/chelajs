@@ -6,7 +6,7 @@ _.str = require('underscore.string');
 
 var Users = require('../collections/users'),
 	Events = require('../collections/events'),
-	talks = require('../collections/talks');
+	Talks = require('../collections/talks');
 
 var adminController = controller({
 	path : 'admin'
@@ -122,9 +122,11 @@ adminController.post('/events/edit/:slug', function (req, res) {
 });
 
 adminController.get('/talks', function (req, res) {
-	talks.fetch(function(err, data){
+	var talks = new Talks();
+	var q = talks.fetch();
+	q.then(function(){
 		res.render('admin/talks',{
-			talks : data
+			talks : talks.toJSON()
 		});
 	});
 });
