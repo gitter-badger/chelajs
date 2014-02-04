@@ -1,0 +1,9 @@
+mExtraExcludes = "node_modules,temp,components,_data,bower_components,chela-db,connect-level-sessionstore"
+excludeInFileChooser  = "{$excludeInFileChooser,$mExtraExcludes}"
+excludeInFolderSearch = "{$excludeInFolderSearch,$mExtraExcludes}"
+excludeDirectories = "{$mExtraExcludes}"
+
+# Includes
+mExtraIncludes = ".gitignore,.compass.rb"
+fileBrowserGlob  = "{*,$mExtraIncludes}"
+include = "{$include,$mExtraIncludes}""
