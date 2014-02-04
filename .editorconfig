@@ -11,3 +11,6 @@ insert_final_newline = true
 # Tab indentation (no size specified)
 [*.js]
 indent_style = tab
+
+[*.html]
+indent_style = tab
