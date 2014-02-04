@@ -4,7 +4,8 @@ body{text-align:justify}
 .navbar .navbar-text .avatar{height:25px}
 .navbar .navbar-text .log-out{color:#fff;}
 .navbar .navbar-text .log-out:hover{color:#b3b3b3;text-decoration:none}
-.jumbotron{padding-top:54px}
+.jumbotron{padding-top:54px;}
+.jumbotron p{width:25em}
 .main{padding-bottom:48px}
 .right{text-align:right}
 .first-container{padding-top:70px}
