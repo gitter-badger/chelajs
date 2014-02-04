@@ -43,7 +43,7 @@ eventsController.get('/:slug', function (req, res) {
 
 eventsController.post('/:slug/call-for-proposals', function (req, res) {
 	var events = new Events();
-	var talks  = new Talks(); 
+	var talks  = new Talks();
 
 	var q = events.fetchOne(function(item){
 		return item.slug === req.params.slug;
@@ -69,7 +69,7 @@ eventsController.post('/:slug/call-for-proposals', function (req, res) {
 			res.redirect('/eventos/'+ event.get('slug') + '?talk-send=success');
 		}).fail(function(err){
 			res.send(500, err);
-		});		
+		});
 	});
 });
 
