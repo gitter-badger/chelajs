@@ -19,9 +19,14 @@ server.set('view cache', false);
 
 server.use(express.static('./public'));
 
+if (process.env.NODE_ENV === 'production') {
+	server.use(express.logger());
+}else{
+	server.use(express.logger('dev'));
+}
+
 // Server config
 server.configure(function() {
-	server.use(express.logger());
 	server.use(express.cookieParser());
 	server.use(express.json());
 	server.use(express.urlencoded());
