@@ -18,8 +18,10 @@
 					<span>{{ user.username }}</span>
 				</div>
 				<div class="col-md-7">
-					{% if user.emails[0]. == null %}
+					{% if user.emails[0].value !== null && user.emails[0].value !== ''  %}
 						{{ user.emails[0].value }}
+					{% else %}
+						No hay email.
 					{% endif %}
 				</div>				
 			</div>
