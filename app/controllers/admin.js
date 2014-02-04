@@ -30,8 +30,9 @@ adminController.get('', function (req, res) {
 adminController.get('/users', function (req, res) {
 	var users = new Users();
 	var q = users.fetch();
-
 	q.then(function(){
+		var data_user = users.toJSON();
+		console.log( data_user[0].emails );
 		res.render('admin/users',{
 			users : users.toJSON()
 		});
