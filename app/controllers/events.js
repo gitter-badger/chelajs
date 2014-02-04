@@ -42,14 +42,18 @@ eventsController.get('/:slug', function (req, res) {
 });
 
 eventsController.post('/:slug/call-for-proposals', function (req, res) {
-	events.get(req.params.slug, function (err, event) {
-		if(!event){
-			res.send(404);
-			return;
-		}
+	var events = new Events();
+	var talks  = new Talks();
 
-		var talk = {
-			event : event.slug,
+	var q = events.fetchOne(function(item){
+		return item.slug === req.params.slug;
+	});
+
+	q.then(function(event){
+		if(!event){ return res.send(404);}
+
+		var talkData = {
+			event : event.get('slug'),
 			user : req.session.passport.user.username,
 			framework : req.body.framework,
 			sites : req.body.sites,
@@ -57,12 +61,14 @@ eventsController.post('/:slug/call-for-proposals', function (req, res) {
 			approved : false
 		};
 
-		var talkId = event.slug + ':' + req.session.passport.user.username + ':' + req.body.framework;
+		var talk = talks.add(talkData);
 
-		talk.id = talkId;
+		var q = talk.save();
 
-		talks.put(talkId,talk,function(){
-			res.redirect('/eventos/'+ event.slug + '?talk-send=success');
+		q.then(function(){
+			res.redirect('/eventos/'+ event.get('slug') + '?talk-send=success');
+		}).fail(function(err){
+			res.send(500, err);
 		});
 	});
 });
