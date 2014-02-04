@@ -4,9 +4,9 @@ var controller = require('../../lib/controller'),
 
 _.str = require('underscore.string');
 
-var users = require('../collections/users'),
-	events = require('../collections/events'),
-	talks = require('../collections/talks');
+var Users = require('../collections/users'),
+	Events = require('../collections/events'),
+	Talks = require('../collections/talks');
 
 var eventsController = controller({
 	path : 'eventos'
@@ -19,28 +19,25 @@ eventsController.beforeEach(function(req, res, next){
 });
 
 eventsController.get('/:slug', function (req, res) {
-	events.get(req.params.slug, function (err, event) {
-		if(!event){
-			res.send(404);
-			return;
+	var events = new Events();
+
+	var q = events.fetchOne(function(item){
+		return item.slug === req.params.slug;
+	});
+
+	q.then(function(event){
+		if(!event){ return res.send(404, 'Event not found');}
+
+		var data = {
+			event : event.toJSON(),
+			user : req.session.passport.user
+		};
+
+		if(req.query['talk-send'] ){
+			data.talkSend = true;
 		}
 
-		if(event.stage === 'Call for proposals'){
-			var data = {
-				event : event,
-				user : req.session.passport.user
-			};
-
-			if(req.query['talk-send'] ){
-				data.talkSend = true;
-			}
-
-			res.render('events/call-for-proposals',data);
-			return;
-		}
-
-		// Implement
-		res.send(event);
+		res.render('events/call-for-proposals',data);
 	});
 });
 
