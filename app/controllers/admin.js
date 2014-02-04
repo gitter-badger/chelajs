@@ -14,6 +14,13 @@ var adminController = controller({
 
 adminController.beforeEach(function(req, res, next){
 	req.data = {};
+	req.data.breadcrumbs = {
+		'/': 'Home',
+		'/admin/': 'Panel',
+		'/admin/users': 'Users',
+		'/admin/events': 'Events',
+		'/admin/talks': 'Talks'
+	};
 	// Validates that user is an admin in the conf file
 	if(req.session && req.session.passport && req.session.passport.user && conf.admins.indexOf(req.session.passport.user.username) >= 0){
 		req.data.user = req.session.passport.user;
