@@ -54,10 +54,14 @@
 				</div>
 				<div class="row list">
 					<div class="col-sm-2">
-						<span>Stage</span>
+						<span>Status</span>
 					</div>
 					<div class="col-sm-10">
-						<input type="text" name="stage" value="{{ event.stage }}"/>
+						<select class="form-control" name="status" value="{{ event.status }}">
+						  <option value="active" {% if event.status == 'active' %} selected {%endif%}>Active</option>
+						  <option value="ongoing" {% if event.status == 'ongoing' %} selected {%endif%}>On Going</option>
+						  <option value="finished" {% if event.status == 'finished' %} selected {%endif%}>Finished</option>
+						</select>
 					</div>
 				</div>
 				<div class="row list">
