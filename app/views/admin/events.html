@@ -15,14 +15,20 @@
 				<a href="/admin/events/new" class="btn btn-primary btn-lg" role="button">New event &raquo;</a>
 			</div>
 			{% for event in events %}
-			<div class="row list">
-				<div class="col-md-3 event" data-slug="{{event.slug}}">
-					<button class="btn {% if event.current %}btn-primary btn-current{% else %}btn-default has-spinner set-as-current{% endif %}">
-						<span class="spinner">
-							<i class="fa fa-spin fa-refresh"></i>
-						</span>
-						Set as current
-					</button>
+			<div class="row list event" data-slug="{{event.slug}}">
+				{% if event.current %}
+				<button class="btn btn-success btn-current col-md-2">
+					Current
+				</button>
+				{% else %}
+				<button class="btn btn-default has-spinner set-as-current col-md-2">
+					<span class="spinner">
+						<i class="fa fa-spin fa-refresh"></i>
+					</span>
+					Set as current
+				</button>
+				{% endif %}
+				<div class="col-md-4">
 					<a href="/admin/events/edit/{{ event.slug }}">{{ event.name }}</a>
 				</div>
 			</div>
@@ -40,7 +46,7 @@
 		width: 0;
 		transition: opacity 0.25s, width 0.25s;
 	}
-	.has-spinner.active .spinner {
+	.working .spinner {
 		opacity: 1;
 		width: 16px;
 	}
@@ -50,21 +56,40 @@
 {% block js %}
 <script src="/js/vendors/jquery.2.0.3.min.js"></script>
 <script>
-	$('.events').on('click', '.btn-default.set-as-current', function (e){
+	var notCurrentTpl = '<span class="spinner"><i class="fa fa-spin fa-refresh"></i></span> Set as current'
+	$.fn.renderNotCurrent = function renderNotCurrent() {
+		this.each(function() {
+			$(this)
+			.removeClass('btn-current btn-success')
+			.addClass('btn-default has-spinner set-as-current')
+			.html(notCurrentTpl)
+		})
+		return this
+	}
+	$.fn.renderCurrent = function renderCurrent() {
+		this.each(function() {
+			$(this)
+			.removeClass('btn-default has-spinner set-as-current')
+			.addClass('btn-current btn-success')
+			.html('Current')
+		})
+		return this
+	}
+
+	$('.events').on('click', '.set-as-current', function (e){
 		var $this = $(this);
 		var slug = $this.closest('.event').data('slug')
-		$this.closest('.events').find('.btn-current')
-			.removeClass('btn-current btn-primary').addClass('btn-default has-spinner set-as-current')
-		$this.addClass('active')
+		$this.closest('.events').find('.btn-current').renderNotCurrent()
+		$this.addClass('working')
 
 		var xhr = $.post('/admin/events/set-as-current', {slug: slug})
 		xhr.always(function(){
-			$this.removeClass('active')
+			$this.removeClass('working')
 		})
 		xhr.then(function(){
-			$this.removeClass('btn-default has-spinner set-as-current').addClass('btn-primary btn-current')
+			$this.renderCurrent()
 		}, function(){
-
+			// deal with error
 		})
 	})
 </script>
