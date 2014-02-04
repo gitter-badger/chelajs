@@ -38,16 +38,16 @@
 						</div>
 						<div class="row sub_row">
 							<div class="col-sm-2">
-								<label for="hour_start">Hora Inicio:</label>
+								<label for="hour_start">Start time:</label>
 							</div>
 							<div class="col-sm-4">
-								<input id="hour_start" type="text" name="date" value="{{ event.date }}"/>
+								<input id="hour_start" type="text" name="hour_start" value="{{ event.hour_start }}"/>
 							</div>
 							<div class="col-sm-2">
-								<label for="hour_end">Hora Fin:</label>
+								<label for="hour_end">End time:</label>
 							</div>
 							<div class="col-sm-4">
-								<input id="hour_end" type="text" name="date" value="{{ event.date }}"/>
+								<input id="hour_end" type="text" name="hour_end" value="{{ event.hour_end }}"/>
 							</div>
 						</div>
 					</div>
@@ -58,6 +58,26 @@
 					</div>
 					<div class="col-sm-10">
 						<input type="text" name="stage" value="{{ event.stage }}"/>
+					</div>
+				</div>
+				<div class="row list">
+					<div class="sub_row">
+						<div class="col-sm-2">
+							<span>Place</span>
+						</div>
+						<div class="col-sm-10">
+							<input type="text" name="place" value="{{ event.place }}"/>
+						</div>
+					</div>
+					<div class="sub_row">
+						<div class="sub_row">
+							<div class="col-sm-2">
+								<span>Address</span>
+							</div>
+							<div class="col-sm-10">
+								<input id="address" type="text" name="address" value="{{ event.address }}"/>
+							</div>
+						</div>
 					</div>
 				</div>
 				<div class="row list">
@@ -91,9 +111,25 @@
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	<script>window.jQuery || document.write('<script src="/js/vendor/jquery.2.0.3.min.js"><\/script>')</script>
 	<script src="/js/vendors/jquery-ui-1.10.4.custom.min.js"></script>
+    <script src="//maps.google.com/maps/api/js?libraries=places,geometry&sensor=true"></script>
 	<script>
+		/* Date/Time pickers options */
 		$('#dayoh').datepicker({"dateFormat": "yy-mm-dd"});
 		$('#hour_start').timepicker({"timeFormat": "HH:mm"});
 		$('#hour_end').timepicker({"timeFormat": "HH:mm"});
+
+		/* Google Places */
+		var options = {
+          types: ['geocode'],
+          componentRestrictions: { country: "MX" }
+        };
+		var autocomplete = new google.maps.places.Autocomplete(document.getElementById('address'), options);
+        google.maps.event.addListener(autocomplete, 'place_changed', function( e ) {
+        	e.preventDefault();
+        	var place = autocomplete.getPlace();
+        	if (place.geometry) {
+        		console.log( place.geometry );
+        	}
+        });
 	</script>
 {% endblock %}
