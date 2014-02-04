@@ -60,13 +60,11 @@ adminController.post('/events/new', function (req, res) {
 	var slug = _.str.slugify(req.body.name);
 
 	var q = events.fetchOne(function(item){
-		return item.slug === slug
-	});	
+		return item.slug === slug;
+	});
 
-	q.then(function(model){
-		if(events.length > 0){
-			res.send('Error: Event already exist');
-		}
+	q.then(function(){
+		if(events.length > 0){return res.send('Error: Event already exist');}
 
 		req.body.slug = slug;
 		var vent = events.add(req.body);
@@ -77,7 +75,7 @@ adminController.post('/events/new', function (req, res) {
 			res.redirect('/admin/events/edit/'+vent.get('slug'));
 		}).fail(function(err){
 			res.send(500, err);
-		});		
+		});
 	});
 });
 
@@ -89,9 +87,7 @@ adminController.get('/events/edit/:slug', function (req, res) {
 	});
 
 	q.then(function(vent){
-		if(!vent){
-			res.send(404, 'Event doesnt exist');
-		}
+		if(!vent){ return res.send(404, 'Event doesnt exist');}
 
 		res.render('admin/events-edit',{
 			event : vent.toJSON()
@@ -104,11 +100,22 @@ adminController.get('/events/edit/:slug', function (req, res) {
 });
 
 adminController.post('/events/edit/:slug', function (req, res) {
-	events.get(req.params.slug, function (err, data) {
-		data = _.extend(data, req.body);
+	var events = new Events();
 
-		events.put(req.params.slug, data, function () {
-			res.redirect('/admin/events/edit/'+data.slug);
+	var q = events.fetchOne(function(item){
+		return item.slug === req.params.slug;
+	});
+
+	q.then(function(vent){
+		if(!vent){ return res.send(404, 'Event doesnt exist');}
+
+		vent.set(req.body);
+
+		var q = vent.save();
+		q.then(function(){
+			res.redirect('/admin/events/edit/'+vent.get('slug'));
+		}).fail(function(err){
+			res.send(500, err);
 		});
 	});
 });

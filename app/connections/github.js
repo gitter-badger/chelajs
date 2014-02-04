@@ -19,7 +19,6 @@ var connection = function (server) {
 
 			q.then(function (user) {
 				if(user){
-					console.log('Log in user');
 					done(null, user.toJSON() );
 				}else{
 					profile.username = profile.username;

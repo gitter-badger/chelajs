@@ -3,4 +3,5 @@
 .main .button-container{padding-top:10px;padding-bottom:10px}
 .main form input,.main form textarea{width:100%}
 .main form textarea.big{height:300px}
+.main form textarea.medium{height:150px}
 .avatar{height:18px;padding-top:10px;padding-bottom:10px}
