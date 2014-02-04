@@ -31,7 +31,25 @@
 						<span>Date</span>
 					</div>
 					<div class="col-sm-10">
-						<input id="dayoh" type="text" name="date" value="{{ event.date }}"/>
+						<div class="row">
+							<div class="col-sm-12">
+								<input id="dayoh" type="text" name="date" value="{{ event.date }}"/>
+							</div>
+						</div>
+						<div class="row sub_row">
+							<div class="col-sm-2">
+								<label for="hour_start">Hora Inicio:</label>
+							</div>
+							<div class="col-sm-4">
+								<input id="hour_start" type="text" name="date" value="{{ event.date }}"/>
+							</div>
+							<div class="col-sm-2">
+								<label for="hour_end">Hora Fin:</label>
+							</div>
+							<div class="col-sm-4">
+								<input id="hour_end" type="text" name="date" value="{{ event.date }}"/>
+							</div>
+						</div>
 					</div>
 				</div>
 				<div class="row list">
@@ -74,6 +92,8 @@
 	<script>window.jQuery || document.write('<script src="/js/vendor/jquery.2.0.3.min.js"><\/script>')</script>
 	<script src="/js/vendors/jquery-ui-1.10.4.custom.min.js"></script>
 	<script>
-		$('#dayoh').datetimepicker({"dateFormat": "yy-mm-dd", timeFormat: "HH:mm"});
+		$('#dayoh').datepicker({"dateFormat": "yy-mm-dd"});
+		$('#hour_start').timepicker({"timeFormat": "HH:mm"});
+		$('#hour_end').timepicker({"timeFormat": "HH:mm"});
 	</script>
 {% endblock %}
