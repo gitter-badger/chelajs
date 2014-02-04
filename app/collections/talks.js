@@ -1,4 +1,4 @@
-var Backbone = require('../../lib/Backbone');
+var Backbone = require('../../lib/backbone');
 
 var TalksModel = Backbone.Model.extend({
 	dbName : 'talks'
