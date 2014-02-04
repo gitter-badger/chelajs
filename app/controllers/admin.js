@@ -22,10 +22,13 @@ adminController.beforeEach(function(req, res, next){
 		'/admin/talks': 'Talks'
 	};
 	// Validates that user is an admin in the conf file
-	if(req.session && req.session.passport && req.session.passport.user && conf.admins.indexOf(req.session.passport.user.username) >= 0){
+	if(req.session &&
+	req.session.passport &&
+	req.session.passport.user &&
+	conf.admins.indexOf(req.session.passport.user.username) >= 0){
 		req.data.user = req.session.passport.user;
 		next();
-	}else{
+	} else {
 		res.redirect('/');
 	}
 });
@@ -38,7 +41,7 @@ adminController.get('/users', function (req, res) {
 	var users = new Users();
 	var q = users.fetch();
 	q.then(function(){
-		var data_user = users.toJSON();
+		var dataUser = users.toJSON();
 		res.render('admin/users',{
 			users : users.toJSON()
 		});

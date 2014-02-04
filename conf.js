@@ -9,10 +9,10 @@ var readConf = function (filePath) {
 
 if( process.env.NODE_ENV === 'production' ){
 	enviroment = readConf('./config/prod.json');
-	enviroment.env = "production";
+	enviroment.env = 'production';
 }else{
 	enviroment = readConf('./config/dev.json');
-	enviroment.env = "development";
+	enviroment.env = 'development';
 }
 
 module.exports = enviroment;
