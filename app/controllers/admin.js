@@ -1,5 +1,6 @@
 var controller = require('../../lib/controller'),
 	_ = require('underscore'),
+	async = require('async'),
 	conf = require('../../conf');
 
 _.str = require('underscore.string');
@@ -128,6 +129,45 @@ adminController.post('/events/edit/:slug', function (req, res) {
 			res.send(500, err);
 		});
 	});
+});
+
+adminController.post('/events/set-as-current', function(req, res) {
+	var slug = req.body.slug,
+	events = new Events();
+
+	if (!slug) {
+		return res.send(404, {error: 'Event doesnt exist'});
+	}
+
+	async.parallel([
+		function(done){
+			var q = events.fetchOne(function (item) {
+				return item.current;
+			});
+
+			q.then(function(current) {
+				if(!current){return done();}
+
+				current.set('current', false);
+				current.save().then(done).fail(done);
+			}).fail(done);
+		},
+		function(done){
+			var q = events.fetchOne(function (item) {
+				return item.slug === slug;
+			});
+
+			q.then(function(newCurrent) {
+				if(!newCurrent){return done();}
+
+				newCurrent.set('current', true);
+				newCurrent.save().then(done).fail(done);
+			}).fail(done);
+		}
+	], function (err, results) {
+		res.send({err:err, results:results});
+	});
+
 });
 
 adminController.get('/talks', function (req, res) {
