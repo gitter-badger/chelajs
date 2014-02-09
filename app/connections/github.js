@@ -13,11 +13,9 @@ var connection = function (server) {
 		function(accessToken, refreshToken, profile, done) {
 			var users = new Users();
 
-			var q = users.fetchOne(function(item){
+			users.fetchOne(function(item){
 				return item.provider === 'github' && item.username === profile.username;
-			});
-
-			q.then(function (user) {
+			}).then(function (user) {
 				if(user){
 					done(null, user.toJSON() );
 				}else{
@@ -30,11 +28,9 @@ var connection = function (server) {
 
 					var newUser = users.add(profile);
 
-					var q = newUser.save();
-
-					q.then(function(){
+					newUser.save().then(function(){
 						done(null, newUser.toJSON() );
-					}).fail(function(err){
+					}, function(err){
 						done(err);
 					});
 				}

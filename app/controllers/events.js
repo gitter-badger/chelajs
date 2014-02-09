@@ -21,11 +21,9 @@ eventsController.beforeEach(function(req, res, next){
 eventsController.get('/:slug', function (req, res) {
 	var events = new Events();
 
-	var q = events.fetchOne(function(item){
+	events.fetchOne(function(item){
 		return item.slug === req.params.slug;
-	});
-
-	q.then(function(event){
+	}).then(function(event){
 		if(!event){ return res.send(404, 'Event not found');}
 
 		var data = {
@@ -44,13 +42,13 @@ eventsController.get('/:slug', function (req, res) {
 eventsController.post('/:slug/call-for-proposals', function (req, res) {
 	var events = new Events();
 	var talks  = new Talks();
+	var event;
 
-	var q = events.fetchOne(function(item){
+	events.fetchOne(function(item){
 		return item.slug === req.params.slug;
-	});
-
-	q.then(function(event){
-		if(!event){ return res.send(404);}
+	}).then(function(_event){
+		if(!_event){ return res.send(404);}
+		event = _event;
 
 		var talkData = {
 			event : event.get('slug'),
@@ -63,13 +61,11 @@ eventsController.post('/:slug/call-for-proposals', function (req, res) {
 
 		var talk = talks.add(talkData);
 
-		var q = talk.save();
-
-		q.then(function(){
-			res.redirect('/eventos/'+ event.get('slug') + '?talk-send=success');
-		}).fail(function(err){
-			res.send(500, err);
-		});
+		return talk.save();
+	}).then(function(){
+		res.redirect('/eventos/'+ event.get('slug') + '?talk-send=success');
+	}).catch(function(err){
+		res.send(500, err);
 	});
 });
 

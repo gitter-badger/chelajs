@@ -21,7 +21,8 @@
     "underscore.string": "~2.3.3",
     "leveldb-backbone-adapter": "~0.1.2",
     "backbone": "~1.1.0",
-    "async": "~0.2.10"
+    "async": "~0.2.10",
+    "bluebird": "~1.0.3"
   },
   "scripts": {
     "start": "node server.js"
