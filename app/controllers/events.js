@@ -4,8 +4,8 @@ var controller = require('../../lib/controller'),
 
 _.str = require('underscore.string');
 
-var Users = require('../collections/users'),
-	Events = require('../collections/events'),
+var Events = require('../collections/events'),
+	Tickets = require('../collections/tickets'),
 	Talks = require('../collections/talks');
 
 var eventsController = controller({
@@ -33,6 +33,10 @@ eventsController.get('/:slug', function (req, res) {
 
 		if(req.query['talk-send'] ){
 			data.talkSend = true;
+		}
+		//TODO guardar en el usuario o buscar si tiene tickets
+		if(req.query.ticket ){
+			data.hasTicket = true;
 		}
 
 		res.render('events/call-for-proposals',data);
@@ -67,6 +71,29 @@ eventsController.post('/:slug/call-for-proposals', function (req, res) {
 	}).catch(function(err){
 		res.send(500, err);
 	});
+});
+
+eventsController.post('/:slug/ticket', function (req, res) {
+	var events = new Events(),
+		tickets = new Tickets(),
+		event;
+
+	events.fetchOne(function(item) {
+		return item.slug === req.params.slug;
+	}).then(function(_event) {
+		if (!_event) return res.send(404);
+		event = _event;
+
+		var newTicket = {
+			event: event.get('slug'),
+			user: req.session.passport.user.username,
+		};
+		var ticket = tickets.add(newTicket);
+		return ticket.save();
+	}).then(function() {
+		res.redirect('/eventos/'+event.get('slug')+'?ticket=success');
+	});
+
 });
 
 module.exports = eventsController;
