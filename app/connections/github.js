@@ -28,9 +28,11 @@ var connection = function (server) {
 
 					var newUser = users.add(profile);
 
-					newUser.save().then(function(){
+					var q = newUser.save();
+
+					q.then(function(){
 						done(null, newUser.toJSON() );
-					}, function(err){
+					}).catch(function(err){
 						done(err);
 					});
 				}

@@ -1,4 +1,4 @@
-var controller = require('../../lib/controller'),
+var controller = require('stackers'),
 	_ = require('underscore'),
 	Promise = require('bluebird'),
 	conf = require('../../conf');
@@ -14,10 +14,9 @@ var adminController = controller({
 });
 
 adminController.beforeEach(function(req, res, next){
-	req.data = {};
-	req.data.breadcrumbs = {
+	res.data.breadcrumbs = {
 		'/': 'Home',
-		'/admin/': 'Panel',
+		'/admin/': 'Admin',
 		'/admin/users': 'Users',
 		'/admin/events': 'Events',
 		'/admin/talks': 'Talks'
@@ -27,7 +26,7 @@ adminController.beforeEach(function(req, res, next){
 	req.session.passport &&
 	req.session.passport.user &&
 	conf.admins.indexOf(req.session.passport.user.username) >= 0){
-		req.data.user = req.session.passport.user;
+		res.data.user = req.session.passport.user;
 		next();
 	} else {
 		res.redirect('/');
@@ -71,14 +70,14 @@ adminController.post('/events/new', function (req, res) {
 
 	events.fetchOne(function(item){
 		return item.slug === slug;
-	}).then(function(events){
+	}).then(function(){
 		if(events.length > 0){return res.send('Error: Event already exist');}
 
 		req.body.slug = slug;
 		vent = events.add(req.body);
 
 		return vent.save();
-	}).then(function(){
+	}).then(function(vent){
 		res.redirect('/admin/events/edit/'+vent.get('slug'));
 	}).catch(function(err){
 		res.send(500, err);
@@ -171,9 +170,9 @@ adminController.post('/events/set-as-current', function(req, res) {
 
 adminController.get('/talks', function (req, res) {
 	var talks = new Talks();
-	talks.fetch().then(function(talks){
+	talks.fetch().then(function(){
 		res.render('admin/talks',{
-			talks : talks && talks.toJSON() || []
+			talks : talks.toJSON()
 		});
 	}).catch(function(err) {
 		res.send(err.status || 500, err);

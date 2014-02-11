@@ -3,7 +3,6 @@ var express = require('express.io'),
 	passport = require('passport');
 
 var LevelStore = require('connect-level')(express);
-var db = require('./lib/db');
 
 var server = express();
 
@@ -68,4 +67,5 @@ adminController(server);
 eventsController(server);
 
 server.listen(3000);
+console.log('Server booted at', new Date() );
 

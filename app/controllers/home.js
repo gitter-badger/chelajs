@@ -1,4 +1,4 @@
-var controller = require('../../lib/controller'),
+var controller = require('stackers'),
 	config = require('../../conf');
 
 var homeController = controller({
@@ -6,7 +6,7 @@ var homeController = controller({
 });
 
 homeController.beforeEach(function(req, res, next){
-	req.data.analytics = config.analytics || '';
+	res.data.analytics = config.analytics || '';
 
 	next();
 });

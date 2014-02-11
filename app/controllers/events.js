@@ -1,4 +1,4 @@
-var controller = require('../../lib/controller'),
+var controller = require('stackers'),
 	_ = require('underscore'),
 	config = require('../../conf');
 
@@ -13,7 +13,7 @@ var eventsController = controller({
 });
 
 eventsController.beforeEach(function(req, res, next){
-	req.data.analytics = config.analytics || '';
+	res.data.analytics = config.analytics || '';
 
 	next();
 });
