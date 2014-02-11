@@ -1,7 +1,6 @@
 {
   "name": "chelajs",
-  "version": "0.0.1-6",
-  "subdomain": "chelajs",
+  "version": "0.0.9",
   "domains": [
     "chelajs.com",
     "www.chelajs.com"
@@ -19,7 +18,7 @@
     "underscore": "~1.5.2",
     "uuid": "~1.4.1",
     "underscore.string": "~2.3.3",
-    "leveldb-backbone-adapter": "~0.1.2",
+    "leveldb-backbone-adapter": "~0.1.5",
     "backbone": "~1.1.0",
     "async": "~0.2.10",
     "stackers": "~0.1.0",
@@ -39,5 +38,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Siedrix/chelajs.git"
-  },
+  }
 }
