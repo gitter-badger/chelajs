@@ -4,8 +4,8 @@ var controller = require('../../lib/controller'),
 
 _.str = require('underscore.string');
 
-var Users = require('../collections/users'),
-	Events = require('../collections/events'),
+var Events = require('../collections/events'),
+	Tickets = require('../collections/tickets'),
 	Talks = require('../collections/talks');
 
 var eventsController = controller({
@@ -21,11 +21,9 @@ eventsController.beforeEach(function(req, res, next){
 eventsController.get('/:slug', function (req, res) {
 	var events = new Events();
 
-	var q = events.fetchOne(function(item){
+	events.fetchOne(function(item){
 		return item.slug === req.params.slug;
-	});
-
-	q.then(function(event){
+	}).then(function(event){
 		if(!event){ return res.send(404, 'Event not found');}
 
 		var data = {
@@ -36,6 +34,10 @@ eventsController.get('/:slug', function (req, res) {
 		if(req.query['talk-send'] ){
 			data.talkSend = true;
 		}
+		//TODO guardar en el usuario o buscar si tiene tickets
+		if(req.query.ticket ){
+			data.hasTicket = true;
+		}
 
 		res.render('events/call-for-proposals',data);
 	});
@@ -44,13 +46,13 @@ eventsController.get('/:slug', function (req, res) {
 eventsController.post('/:slug/call-for-proposals', function (req, res) {
 	var events = new Events();
 	var talks  = new Talks();
+	var event;
 
-	var q = events.fetchOne(function(item){
+	events.fetchOne(function(item){
 		return item.slug === req.params.slug;
-	});
-
-	q.then(function(event){
-		if(!event){ return res.send(404);}
+	}).then(function(_event){
+		if(!_event){ return res.send(404);}
+		event = _event;
 
 		var talkData = {
 			event : event.get('slug'),
@@ -63,14 +65,35 @@ eventsController.post('/:slug/call-for-proposals', function (req, res) {
 
 		var talk = talks.add(talkData);
 
-		var q = talk.save();
-
-		q.then(function(){
-			res.redirect('/eventos/'+ event.get('slug') + '?talk-send=success');
-		}).fail(function(err){
-			res.send(500, err);
-		});
+		return talk.save();
+	}).then(function(){
+		res.redirect('/eventos/'+ event.get('slug') + '?talk-send=success');
+	}).catch(function(err){
+		res.send(500, err);
 	});
+});
+
+eventsController.post('/:slug/ticket', function (req, res) {
+	var events = new Events(),
+		tickets = new Tickets(),
+		event;
+
+	events.fetchOne(function(item) {
+		return item.slug === req.params.slug;
+	}).then(function(_event) {
+		if (!_event) return res.send(404);
+		event = _event;
+
+		var newTicket = {
+			event: event.get('slug'),
+			user: req.session.passport.user.username,
+		};
+		var ticket = tickets.add(newTicket);
+		return ticket.save();
+	}).then(function() {
+		res.redirect('/eventos/'+event.get('slug')+'?ticket=success');
+	});
+
 });
 
 module.exports = eventsController;

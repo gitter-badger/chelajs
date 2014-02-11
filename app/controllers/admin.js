@@ -1,6 +1,6 @@
 var controller = require('../../lib/controller'),
 	_ = require('underscore'),
-	async = require('async'),
+	Promise = require('bluebird'),
 	conf = require('../../conf');
 
 _.str = require('underscore.string');
@@ -40,9 +40,7 @@ adminController.get('', function (req, res) {
 
 adminController.get('/users', function (req, res) {
 	var users = new Users();
-	var q = users.fetch();
-	q.then(function(){
-		var dataUser = users.toJSON();
+	users.fetch().then(function(){
 		res.render('admin/users',{
 			users : users.toJSON()
 		});
@@ -69,66 +67,60 @@ adminController.get('/events/new', function (req, res) {
 adminController.post('/events/new', function (req, res) {
 	var events = new Events();
 	var slug = _.str.slugify(req.body.name);
+	var vent;
 
-	var q = events.fetchOne(function(item){
+	events.fetchOne(function(item){
 		return item.slug === slug;
-	});
-
-	q.then(function(){
+	}).then(function(events){
 		if(events.length > 0){return res.send('Error: Event already exist');}
 
 		req.body.slug = slug;
-		var vent = events.add(req.body);
+		vent = events.add(req.body);
 
-		var q = vent.save();
-
-		q.then(function(){
-			res.redirect('/admin/events/edit/'+vent.get('slug'));
-		}).fail(function(err){
-			res.send(500, err);
-		});
+		return vent.save();
+	}).then(function(){
+		res.redirect('/admin/events/edit/'+vent.get('slug'));
+	}).catch(function(err){
+		res.send(500, err);
 	});
+
 });
 
 adminController.get('/events/edit/:slug', function (req, res) {
 	var events = new Events();
 
-	var q = events.fetchOne(function(item){
+	events.fetchOne(function(item){
 		return item.slug === req.params.slug;
-	});
-
-	q.then(function(vent){
+	}).then(function(vent){
 		if(!vent){ return res.send(404, 'Event doesnt exist');}
 
 		res.render('admin/events-edit',{
 			event : vent.toJSON()
 		});
-	});
-
-	q.fail(function(err){
+	}).catch(function(err){
 		res.send(500, err);
 	});
 });
 
 adminController.post('/events/edit/:slug', function (req, res) {
-	var events = new Events();
+	var events = new Events(),
+		vent;
 
-	var q = events.fetchOne(function(item){
+	events.fetchOne(function(item){
 		return item.slug === req.params.slug;
-	});
-
-	q.then(function(vent){
-		if(!vent){ return res.send(404, 'Event doesnt exist');}
+	}).then(function(_vent){
+		if(!_vent){ return res.send(404, 'Event doesnt exist');}
+		vent = _vent;
 
 		vent.set(req.body);
 
-		var q = vent.save();
-		q.then(function(){
-			res.redirect('/admin/events/edit/'+vent.get('slug'));
-		}).fail(function(err){
-			res.send(500, err);
-		});
+		return vent.save();
+	}).then(function(){
+		res.redirect('/admin/events/edit/'+vent.get('slug'));
+	}).catch(function(err){
+		res.send(500, err);
 	});
+
 });
 
 adminController.post('/events/set-as-current', function(req, res) {
@@ -139,44 +131,52 @@ adminController.post('/events/set-as-current', function(req, res) {
 		return res.send(404, {error: 'Event doesnt exist'});
 	}
 
-	async.parallel([
-		function(done){
-			var q = events.fetchOne(function (item) {
-				return item.current;
-			});
+	var unsetCurrent = function() {
+		return events.fetchOne(function (item) {
+			return item.current;
+		}).then(function(current) {
+			if(!current) return true;
 
-			q.then(function(current) {
-				if(!current){return done();}
+			current.set('current', false);
+			return current.save();
+		}).then(function() {
+			return true;
+		});
+	};
 
-				current.set('current', false);
-				current.save().then(done).fail(done);
-			}).fail(done);
-		},
-		function(done){
-			var q = events.fetchOne(function (item) {
-				return item.slug === slug;
-			});
+	var setCurrent = function(slug) {
+		return events.fetchOne(function (item) {
+			return item.slug === slug;
+		}).then(function(newCurrent) {
+			if(!newCurrent){
+				var err = new Error('object not found');
+				err.status = 404;
+				throw err;
+			}
 
-			q.then(function(newCurrent) {
-				if(!newCurrent){return done();}
+			newCurrent.set('current', true);
+			return newCurrent.save();
+		}).then(function() {
+			return true;
+		});
+	};
 
-				newCurrent.set('current', true);
-				newCurrent.save().then(done).fail(done);
-			}).fail(done);
-		}
-	], function (err, results) {
-		res.send({err:err, results:results});
+	Promise.all([unsetCurrent(), setCurrent(slug)]).then(function(results) {
+		res.send({results: results});
+	}).catch(function(err) {
+		var status = err.status || 500;
+		res.send(status, err);
 	});
-
 });
 
 adminController.get('/talks', function (req, res) {
 	var talks = new Talks();
-	var q = talks.fetch();
-	q.then(function(){
+	talks.fetch().then(function(talks){
 		res.render('admin/talks',{
-			talks : talks.toJSON()
+			talks : talks && talks.toJSON() || []
 		});
+	}).catch(function(err) {
+		res.send(err.status || 500, err);
 	});
 });
 
