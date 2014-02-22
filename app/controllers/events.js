@@ -20,6 +20,7 @@ eventsController.beforeEach(function(req, res, next){
 
 eventsController.get('/:slug', function (req, res) {
 	var events = new Events();
+	var tickets = new Tickets();
 
 	events.fetchOne(function(item){
 		return item.slug === req.params.slug;
@@ -34,12 +35,22 @@ eventsController.get('/:slug', function (req, res) {
 		if(req.query['talk-send'] ){
 			data.talkSend = true;
 		}
-		//TODO guardar en el usuario o buscar si tiene tickets
-		if(req.query.ticket ){
-			data.hasTicket = true;
-		}
 
-		res.render('events/call-for-proposals',data);
+		//TODO guardar en el usuario o buscar si tiene tickets
+		tickets.fetch(function(item) {
+			return item.slug === event.get('slug');
+		}).then(function(){
+			var userTicket = tickets.find(function(item){
+				return item.get('user') === req.session.passport.user.username;
+			});
+
+			if( userTicket ){ data.hasTicket = true;}
+
+			data.attendees = tickets.toJSON();
+
+			res.render('events/call-for-proposals',data);
+		});
+
 	});
 });
 

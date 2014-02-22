@@ -21,8 +21,12 @@ homeController.get('', function (req, res) {
 	});
 
 	q.then(function(event){
-		var eventData = event.toJSON();
-		eventData.date = moment( event.get('date') ).lang("es").format('MMMM DD');
+		var eventData;
+
+		if(event){
+			eventData = event.toJSON();
+			eventData.date = moment( event.get('date') ).lang('es').format('MMMM DD');
+		}
 
 		res.render('home',{
 			user  : req.session.passport.user,
