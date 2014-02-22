@@ -15,9 +15,21 @@
 					<p>Un grupo developers se reúnen a tomar javascript con el pretexto de hablar del mejor lenguaje hoy en día: cerveza.</p>
 				</div>
 				<div class="col-md-4 next-event">
-					<h2>Siguiente evento</h2>
-					<div>Estamos buscando lugar para el evento de Febrero, fecha ideal 27 de febrero</div>
-					<div>Contacta a <a href="https://twitter.com/siedrix">@Siedrix</a> si tienes el un lugar donde lo podamos hacer.</div>
+					{% if event %}
+						{% if event.status == 'active' %}
+							<h2>{{event.name}}</h2>
+							<div>Fecha del evento: <b>{{event.date}}</b></div>
+							<div>{{event.except}}</div>
+							<div>Consigue tu boleto <a href="/eventos/{{event.slug}}">aqui</a></div>
+						{% else %}
+							<h2>Siguiente evento</h2>
+							<div>Estamos buscando lugar para el evento de Febrero, fecha ideal 27 de febrero</div>
+							<div>Contacta a <a href="https://twitter.com/siedrix">@Siedrix</a> si tienes el un lugar donde lo podamos hacer.</div>
+						{% endif %}
+					{% else %}
+						<h2>No Siguiente evento</h2>
+						<div>Si tienes un lugar y quieres colaborar con ChelaJs contacta a <a href="https://twitter.com/siedrix">@Siedrix</a> y ayudanos a que sucede al siguiente.</div>
+					{% endif %}
 				</div>
 			</div>
 		</div>

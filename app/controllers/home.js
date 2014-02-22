@@ -1,5 +1,8 @@
 var controller = require('stackers'),
-	config = require('../../conf');
+	config = require('../../conf'),
+	moment = require('moment');
+
+var Events = require('../collections/events');
 
 var homeController = controller({
 	path : ''
@@ -13,9 +16,20 @@ homeController.beforeEach(function(req, res, next){
 
 // Server routes
 homeController.get('', function (req, res) {
-	res.render('home',{
-		user : req.session.passport.user
+	var q = Events.findOne(function(event){
+		return event.current === true;
 	});
+
+	q.then(function(event){
+		var eventData = event.toJSON();
+		eventData.date = moment( event.get('date') ).lang("es").format('MMMM DD');
+
+		res.render('home',{
+			user  : req.session.passport.user,
+			event : eventData
+		});
+	});
+
 });
 
 module.exports = homeController;
