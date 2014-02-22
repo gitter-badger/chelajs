@@ -4,9 +4,10 @@ var controller = require('stackers'),
 
 _.str = require('underscore.string');
 
-var Events = require('../collections/events'),
+var Events  = require('../collections/events'),
 	Tickets = require('../collections/tickets'),
-	Talks = require('../collections/talks');
+	Users   = require('../collections/users'),
+	Talks   = require('../collections/talks');
 
 var eventsController = controller({
 	path : 'eventos'
@@ -19,8 +20,9 @@ eventsController.beforeEach(function(req, res, next){
 });
 
 eventsController.get('/:slug', function (req, res) {
-	var events = new Events();
+	var events  = new Events();
 	var tickets = new Tickets();
+	var users   = new Users();
 
 	events.fetchOne(function(item){
 		return item.slug === req.params.slug;
@@ -46,11 +48,23 @@ eventsController.get('/:slug', function (req, res) {
 
 			if( userTicket ){ data.hasTicket = true;}
 
-			data.attendees = tickets.toJSON();
+			// Populate avatar
+			users.fetchFilter(function(user){
+				var ticket = tickets.find(function(ticket){
+					return ticket.get('user') === req.session.passport.user.username;
+				});
 
-			res.render('events/call-for-proposals',data);
+				if(ticket){
+					ticket.set('avatar', user.data.avatar_url);
+				}
+
+				return;
+			}).then(function(){
+				data.attendees = tickets.toJSON();
+
+				res.render('events/call-for-proposals',data);
+			});
 		});
-
 	});
 });
 
