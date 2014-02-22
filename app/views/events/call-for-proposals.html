@@ -27,7 +27,7 @@
 						</form>
 					{% endif %}
 
-					<h4>Asistentes</h4>
+					<h4>Asistentes({{attendees.length}})</h4>
 					<ul>
 					{% for attendee in attendees %}
 						<li><img src="{{attendee.avatar}}">{{attendee.user}}</li>
