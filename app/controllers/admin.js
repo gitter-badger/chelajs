@@ -7,7 +7,8 @@ _.str = require('underscore.string');
 
 var Users = require('../collections/users'),
 	Events = require('../collections/events'),
-	Talks = require('../collections/talks');
+	Talks = require('../collections/talks'),
+	Tickets = require('../collections/tickets');
 
 var adminController = controller({
 	path : 'admin'
@@ -87,14 +88,21 @@ adminController.post('/events/new', function (req, res) {
 
 adminController.get('/events/edit/:slug', function (req, res) {
 	var events = new Events();
+	var tickets = new Tickets();
 
 	events.fetchOne(function(item){
 		return item.slug === req.params.slug;
 	}).then(function(vent){
-		if(!vent){ return res.send(404, 'Event doesnt exist');}
+		if(!vent){ return res.send(404, 'Event doesnt exist'); }
 
-		res.render('admin/events-edit',{
-			event : vent.toJSON()
+		tickets.fetchFilter(function(item) {
+			return item.event === vent.get('slug');
+		}).then(function(){
+			// console.log(tickets.toJSON());
+			res.render('admin/events-edit',{
+				event : vent.toJSON(),
+				tickets : tickets.toJSON()
+			});
 		});
 	}).catch(function(err){
 		res.send(500, err);

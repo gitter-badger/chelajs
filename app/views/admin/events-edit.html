@@ -108,6 +108,25 @@
 					{% endif %}
 				</div>
 			</form>
+			<h3>Attendees</h3>
+			<div class="row list">
+				<div class="col-xs-4"><h4>Nombre</h4></div>
+				<div class="col-xs-4"><h4>User</h4></div>
+				<div class="col-xs-4"><h4>Talk</h4></div>
+			</div>
+			<div class="row list">
+				{% for ticket in tickets %}
+				<div class="col-xs-4"><span>{{ ticket.user }}</span></div>
+				<div class="col-xs-4"><span>{{ ticket.user }}</span></div>
+				<div class="col-xs-4">
+					{% if ticket.framework %}
+						{{ ticket.framework}}
+					{% else %}
+						&nbsp;
+					{% endif %}
+				</div>
+				{% endfor %}
+			</div>
 		</div>
 	</div>
 {% endblock %}
