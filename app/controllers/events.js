@@ -73,7 +73,7 @@ var renderActive = function(event, req, res){
 		}).then(function(){
 			data.attendees = tickets.toJSON();
 
-			res.render('events/ongoing',data);
+			res.render('events/active',data);
 		}).catch(function(err){
 			res.send(500, err);
 		});
