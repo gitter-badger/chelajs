@@ -1,0 +1,51 @@
+{% extends '../layout.html' %}
+
+{% block title %}{% endblock %}
+
+{% block head %}
+	{% parent %}
+{% endblock %}
+
+{% block content %}
+	<div class="main first-container">
+		<div class="container">
+			<div class="row ">
+				<div class="col-md-7">
+					<h1>{{event.name}}</h1>
+					<p>{{ event.date }} {{ event.hour_start }} - {{ event.hour_end }}</p>
+					{% autoescape false %}
+					<p>{{event.description}}</p>
+					{% endautoescape %}
+
+					<div class="reviews">
+						{% for review in reviews %}
+						<div class="review">
+							<p><img src="{{review.avatar}}">{{review.user}}</p>
+							<p>{{review.review}}</p>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+				<div class="col-md-5">
+					{% if user and hasUsedTicket %}
+						<h4>Gracias por asistir al evento</h4>
+						<p>Deja in review del evento</p>
+						<form class="call-for-proposals" method="POST" action="/eventos/{{event.slug}}/review">
+							<p><textarea name="review">{{talk.review}}</textarea></p>
+							<p class="right"><button class="btn btn-default">Enviar review</button></p>
+						</form>				
+					{% else %}				
+						<h4>Si fuiste al evento, haz log in para dejar tu review</h4>
+					{% endif %}				
+
+					<h4>Asistentes al evento({{attendees.length || '0'}})</h4>
+					<ul>
+					{% for attendee in attendees %}
+						<li><img src="{{attendee.avatar}}">{{attendee.user}}</li>
+					{% endfor %}
+					</ul>				
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

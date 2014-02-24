@@ -1,0 +1,54 @@
+{% extends '../layout.html' %}
+
+{% block title %}{% endblock %}
+
+{% block head %}
+	{% parent %}
+{% endblock %}
+
+{% block content %}
+	<div class="main first-container">
+		<div class="container">
+			<div class="row ">
+				<div class="col-md-7">
+					<h1>{{event.name}}</h1>
+					{% autoescape false %}
+					<p>{{event.description}}</p>
+					{% endautoescape %}
+					{{ event.date }} {{ event.hour_start }} - {{ event.hour_end }}
+				</div>
+				<div class="col-md-5">
+					{% if hasUsedTicket %}
+						<h4>Gracias por asistir al evento</h4>
+					{% elseif hasTicket %}
+						<h4>Tengo boleto y estoy en el evento</h4>
+						<form action="/eventos/{{event.slug}}/check-in" method="post">
+								<button class="btn btn-primary">Hacer check in</button>
+						</form>
+					{% elseif user %}
+						<h4>Estoy en el evento</h4>
+						<form action="/eventos/{{event.slug}}/check-in" method="post">
+								<button class="btn btn-primary">Hacer check in</button>
+						</form>						
+					{% else %}				
+						<h4>Haz log in para hacer log in al evento</h4>
+					{% endif %}				
+
+					<h4>Asistentes en el evento({{attendeesOnEvent.length || '0'}})</h4>
+					<ul>
+					{% for attendee in attendeesOnEvent %}
+						<li><img src="{{attendee.avatar}}">{{attendee.user}}</li>
+					{% endfor %}
+					</ul>
+
+					<h4>Asistentes que todavia no llegan al evento({{attendeesNotEvent.length || '0'}})</h4>
+					<ul>
+					{% for attendee in attendeesNotEvent %}
+						<li><img src="{{attendee.avatar}}">{{attendee.user}}</li>
+					{% endfor %}
+					</ul>					
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
