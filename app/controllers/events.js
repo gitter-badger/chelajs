@@ -61,7 +61,7 @@ var renderActive = function(event, req, res){
 			if( !(req.session.passport.user && req.session.passport.user.username) ){return}
 
 			var avatarTicket = tickets.find(function(ticket){
-				return ticket.get('user') === req.session.passport.user.username;
+				return ticket.get('user') === user.username;
 			});
 
 			if(avatarTicket){
