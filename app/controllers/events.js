@@ -57,8 +57,8 @@ var renderActive = function(event, req, res){
 		if( userTicket ){ data.hasTicket = true;}
 
 		// Populate avatar
-		users.fetchFilter(function(user){
-			if( !(req.session.passport.user && req.session.passport.user.username) ){return}
+		return users.fetchFilter(function(user){
+			if( !(req.session.passport.user && req.session.passport.user.username) ){return;}
 
 			var avatarTicket = tickets.find(function(ticket){
 				return ticket.get('user') === user.username;
@@ -67,15 +67,11 @@ var renderActive = function(event, req, res){
 			if(avatarTicket){
 				avatarTicket.set('avatar', user.data.avatar_url);
 			}
-
-			return;
-		}).then(function(){
-			data.attendees = tickets.toJSON();
-
-			res.render('events/active',data);
-		}).catch(function(err){
-			res.send(500, err);
 		});
+	}).then(function(){
+		data.attendees = tickets.toJSON();
+
+		res.render('events/active',data);
 	}).catch(function(err){
 		res.send(500, err);
 	});
@@ -108,44 +104,39 @@ var renderOngoing = function(event, req, res){
 
 		if( userTicket ){ data.hasTicket = true;}
 		if( userUsedTicket ){ data.hasUsedTicket = true; }
+		
 		// Populate avatar
-		users.fetchFilter(function(user){
-			var ticket;
-			if(req.session.passport.user && req.session.passport.user.username){
-				ticket = tickets.find(function(ticket){
-					return ticket.get('user') === req.session.passport.user.username;
-				});
-			}
+		return users.fetchFilter(function(user){
+			if( !(req.session.passport.user && req.session.passport.user.username) ){return;}
 
-			if(ticket){
-				ticket.set('avatar', user.data.avatar_url);
-			}
-
-			return;
-		}).then(function(){
-			data.attendeesOnEvent = tickets.filter(function(item){
-				return item.get('used');
-			}).map(function(item){
-				return item.toJSON();
+			var avatarTicket = tickets.find(function(ticket){
+				return ticket.get('user') === user.username;
 			});
 
-			data.attendeesNotEvent = tickets.filter(function(item){
-				return !item.get('used');
-			}).map(function(item){
-				return item.toJSON();
-			});
-
-			res.render('events/ongoing',data);
-		}).catch(function(err){
-			res.send(500, err);
+			if(avatarTicket){
+				avatarTicket.set('avatar', user.data.avatar_url);
+			}
 		});
+	}).then(function(){
+		data.attendeesOnEvent = tickets.filter(function(item){
+			return item.get('used');
+		}).map(function(item){
+			return item.toJSON();
+		});
+
+		data.attendeesNotEvent = tickets.filter(function(item){
+			return !item.get('used');
+		}).map(function(item){
+			return item.toJSON();
+		});
+
+		res.render('events/ongoing',data);
 	}).catch(function(err){
 		res.send(500, err);
 	});
 };
 
 var renderFinished = function(event, req, res){
-	console.log('renderFinished');
 	var tickets = new Tickets();
 	var users   = new Users();
 
@@ -173,19 +164,16 @@ var renderFinished = function(event, req, res){
 		if( userTicket ){ data.hasTicket = true;}
 		if( userUsedTicket ){ data.hasUsedTicket = true; }
 
-		console.log('Starting populate');
-
 		// Populate avatar
 		return users.fetchFilter(function(user){
-			var ticket;
-			if(req.session.passport.user && req.session.passport.user.username){
-				ticket = tickets.find(function(ticket){
-					return ticket.get('user') === req.session.passport.user.username;
-				});
-			}
+			if( !(req.session.passport.user && req.session.passport.user.username) ){return;}
 
-			if(ticket){
-				ticket.set('avatar', user.data.avatar_url);
+			var avatarTicket = tickets.find(function(ticket){
+				return ticket.get('user') === user.username;
+			});
+
+			if(avatarTicket){
+				avatarTicket.set('avatar', user.data.avatar_url);
 			}
 		});
 	}).then(function(){
