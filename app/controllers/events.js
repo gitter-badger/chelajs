@@ -1,6 +1,7 @@
 var controller = require('stackers'),
-	_ = require('underscore'),
-	config = require('../../conf');
+	_          = require('underscore'),
+	Promise    = require('bluebird')
+	config     = require('../../conf');
 
 _.str = require('underscore.string');
 
@@ -22,6 +23,7 @@ eventsController.beforeEach(function(req, res, next){
 eventsController.get('/:slug', function (req, res) {
 	var events  = new Events();
 	var tickets = new Tickets();
+	var talks   = new Talks();
 	var users   = new Users();
 
 	events.fetchOne(function(item){
@@ -34,25 +36,41 @@ eventsController.get('/:slug', function (req, res) {
 			user : req.session.passport.user
 		};
 
-		if(req.query['talk-send'] ){
-			data.talkSend = true;
-		}
+		if(req.query['talk-send']){data.talkSend = true;}
+		if(req.query['talk-updated']){data.talkEdit = true;}
 
-		//TODO guardar en el usuario o buscar si tiene tickets
-		tickets.fetch(function(item) {
-			return item.slug === event.get('slug');
-		}).then(function(){
-			var userTicket = tickets.find(function(item){
-				return item.get('user') === req.session.passport.user.username;
-			});
+		var qTickets = tickets.fetchFilter(function(item) {
+			console.log(item.event, event.get('slug'));
+			return item.event === event.get('slug');
+		});
+
+		var qTalks = talks.fetchFilter(function(item){
+			return item.event === event.get('slug') && item.user === req.session.passport.user.username;
+		});
+
+		Promise.all([qTickets,qTalks])
+		.then(function(){
+			if(talks.length > 0){
+				data.talk = talks.first().toJSON();
+			}
+
+			var userTicket;
+			if(req.session.passport.user && req.session.passport.user.username){
+				userTicket = tickets.find(function(item){
+					return item.get('user') === req.session.passport.user.username;
+				});
+			}
 
 			if( userTicket ){ data.hasTicket = true;}
 
-			// Populate avatar
+			// // Populate avatar
 			users.fetchFilter(function(user){
-				var ticket = tickets.find(function(ticket){
-					return ticket.get('user') === req.session.passport.user.username;
-				});
+				var ticket;
+				if(req.session.passport.user && req.session.passport.user.username){
+					ticket = tickets.find(function(ticket){
+						return ticket.get('user') === req.session.passport.user.username;
+					});
+				}
 
 				if(ticket){
 					ticket.set('avatar', user.data.avatar_url);
@@ -63,7 +81,11 @@ eventsController.get('/:slug', function (req, res) {
 				data.attendees = tickets.toJSON();
 
 				res.render('events/call-for-proposals',data);
+			}).catch(function(err){
+				res.send(500, err);
 			});
+		}).catch(function(err){
+			res.send(500, err);
 		});
 	});
 });
@@ -80,12 +102,12 @@ eventsController.post('/:slug/call-for-proposals', function (req, res) {
 		event = _event;
 
 		var talkData = {
-			event : event.get('slug'),
-			user : req.session.passport.user.username,
-			framework : req.body.framework,
-			sites : req.body.sites,
-			experience : req.body.experience,
-			approved : false
+			event       : event.get('slug'),
+			user        : req.session.passport.user.username,
+			title       : req.body.title,
+			description : req.body.description,
+			experience  : req.body.experience,
+			approved    : false
 		};
 
 		var talk = talks.add(talkData);
@@ -110,15 +132,47 @@ eventsController.post('/:slug/ticket', function (req, res) {
 		event = _event;
 
 		var newTicket = {
-			event: event.get('slug'),
-			user: req.session.passport.user.username,
+			event  : event.get('slug'),
+			user   : req.session.passport.user.username,
+			used   : false
 		};
+
 		var ticket = tickets.add(newTicket);
 		return ticket.save();
 	}).then(function() {
 		res.redirect('/eventos/'+event.get('slug')+'?ticket=success');
 	});
+});
 
+eventsController.post('/:slug/talks/:id/edit', function(req, res){
+	var talks  = new Talks();
+
+	talks.fetchFilter(function(item){
+		return item.user  === req.session.passport.user.username &&
+			item.event === req.params.slug;
+	}).then(function(){
+		var talk;
+		if(talks.length === 0){
+			res.send(404, 'no talk to save');
+		}else{
+			talk = talks.first();
+		}
+
+		talk.set({
+			title       : req.body.title,
+			description : req.body.description,
+			experience  : req.body.experience,
+		});
+
+		talk.save().then(function(){
+			res.redirect('/eventos/'+ req.params.slug + '?talk-updated=true');
+		}).catch(function(err){
+			res.send(500, err);
+		})
+
+	}).catch(function(err){
+		res.send(500, err);
+	});
 });
 
 module.exports = eventsController;

@@ -33,7 +33,6 @@ homeController.get('', function (req, res) {
 			event : eventData
 		});
 	});
-
 });
 
 module.exports = homeController;

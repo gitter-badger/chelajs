@@ -18,6 +18,7 @@
 					{{ event.date }} {{ event.hour_start }} - {{ event.hour_end }}
 				</div>
 				<div class="col-md-5">
+				{% if user %}
 					{% if hasTicket %}
 						<h4>Ya tienes tu boleto, nos vemos en el evento</h4>
 					{% elseif user %}
@@ -37,19 +38,31 @@
 
 					{% if talkSend %}
 						<h4>Gracias por enviar tu platica, <a href="http://twitter.com/siedrix">@siedrix</a> te contactará pronto.</h4>
-					{% elseif user %}
-						<form class="call-for-proposals" action="/eventos/{{event.slug}}/call-for-proposals" method="POST">
-							<h4>Quiero dar una plática.</h4>
-							<p>Yo {{user.username}} quiero dar una plática acerca de <input name="framework" type="text"/></p>
-							<p>¿Dónde lo has usado en producción?</p>
-							<p><textarea name="sites"></textarea></p>
-							<p>Cuéntanos un poco de tu experiencia con esta libreria/tecnología</p>
-							<p><textarea name="experience"></textarea></p>
-							<p class="right"><button class="btn btn-default">Enviar propuesta</button></p>
-						</form>
-					{% else %}
-						<p>Haz log in si quieres proponer una plática <i class="fa fa-long-arrow-up" style="font-size:30px"></i></p>
 					{% endif %}
+
+					{% if talkEdit %}
+						<h4>La platica modificada.</h4>
+					{% endif %}
+
+
+					{% if talk %}
+					<form class="call-for-proposals" action="/eventos/{{event.slug}}/talks/{{talk.id}}/edit" method="POST">
+						<h4>Tu platica sugeria para el evento.</h4>
+					{% else %}
+					<form class="call-for-proposals" action="/eventos/{{event.slug}}/call-for-proposals" method="POST">
+						<h4>Quiero dar una plática.</h4>
+					{% endif %}
+						<p>Yo {{user.username}} quiero dar una plática acerca de <input name="title" type="text" value="{{talk.title}}"/></p>
+						<p>Description de tu platica:</p>
+						<p><textarea name="description">{{talk.description}}</textarea></p>
+						<p>Cuéntanos un poco de tu experiencia con esta libreria/tecnología</p>
+						<p><textarea name="experience">{{talk.experience}}</textarea></p>
+						<p class="right"><button class="btn btn-default">Enviar propuesta</button></p>
+					</form>
+
+				{% else %}
+					<p>Haz log in si quieres proponer una plática o conseguir tu boleto, haz <a href="/auth/github">log in</a></p>
+				{% endif %}
 				</div>
 			</div>
 		</div>

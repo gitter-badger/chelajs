@@ -1,11 +1,11 @@
 var Backbone = require('../../lib/backbone');
 
 var TicketsModel = Backbone.Model.extend({
-	dbName : 'talks'
+	dbName : 'tickets'
 });
 
 var Tickets = Backbone.Collection.extend({
-	dbName : 'talks',
+	dbName : 'tickets',
 	model : TicketsModel
 });
 

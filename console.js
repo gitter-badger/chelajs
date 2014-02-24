@@ -1,15 +1,15 @@
-var repl = require("repl");
+var repl = require('repl');
 
 var terminal = repl.start({
-	prompt: "ChelaJs > ",
+	prompt: 'ChelaJs > ',
 	input: process.stdin,
 	output: process.stdout
 });
 
-terminal.context.db = require('./lib/db');
-terminal.context.users = require('./app/collections/users');
-terminal.context.talks = require('./app/collections/talks');
-terminal.context.events = require('./app/collections/events');
+terminal.context.Users   = require('./app/collections/users');
+terminal.context.Talks   = require('./app/collections/talks');
+terminal.context.Events  = require('./app/collections/events');
+terminal.context.Tickets = require('./app/collections/tickets');
 
 terminal.context.kill = function () {
 	process.kill();
