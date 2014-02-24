@@ -20,73 +20,168 @@ eventsController.beforeEach(function(req, res, next){
 	next();
 });
 
-eventsController.get('/:slug', function (req, res) {
-	var events  = new Events();
+var renderActive = function(event, req, res){
 	var tickets = new Tickets();
 	var talks   = new Talks();
 	var users   = new Users();
+
+	var data = {
+		event : event.toJSON(),
+		user : req.session.passport.user
+	};
+
+	if(req.query['talk-send']){data.talkSend = true;}
+	if(req.query['talk-updated']){data.talkEdit = true;}
+
+	var qTickets = tickets.fetchFilter(function(item) {
+		return item.event === event.get('slug');
+	});
+
+	var qTalks = talks.fetchFilter(function(item){
+		return item.event === event.get('slug') && item.user === req.session.passport.user.username;
+	});
+
+	Promise.all([qTickets,qTalks])
+	.then(function(){
+		if(talks.length > 0){
+			data.talk = talks.first().toJSON();
+		}
+
+		var userTicket;
+		if(req.session.passport.user && req.session.passport.user.username){
+			userTicket = tickets.find(function(item){
+				return item.get('user') === req.session.passport.user.username;
+			});
+		}
+
+		if( userTicket ){ data.hasTicket = true;}
+
+		// Populate avatar
+		users.fetchFilter(function(user){
+			var ticket;
+			if(req.session.passport.user && req.session.passport.user.username){
+				ticket = tickets.find(function(ticket){
+					return ticket.get('user') === req.session.passport.user.username;
+				});
+			}
+
+			if(ticket){
+				ticket.set('avatar', user.data.avatar_url);
+			}
+
+			return;
+		}).then(function(){
+			data.attendees = tickets.toJSON();
+
+			res.render('events/ongoing',data);
+		}).catch(function(err){
+			res.send(500, err);
+		});
+	}).catch(function(err){
+		res.send(500, err);
+	});
+};
+
+var renderOngoing = function(event, req, res){
+	var tickets = new Tickets();
+	var users   = new Users();
+
+	var data = {
+		event : event.toJSON(),
+		user : req.session.passport.user
+	};
+
+	var qTickets = tickets.fetchFilter(function(item) {
+		return item.event === event.get('slug');
+	});
+
+	qTickets.then(function(){
+		var userTicket, userUsedTicket;
+		if(req.session.passport.user && req.session.passport.user.username){
+			userTicket = tickets.find(function(item){
+				return item.get('user') === req.session.passport.user.username;
+			});
+
+			userUsedTicket = tickets.find(function(item){
+				return item.get('user') === req.session.passport.user.username && item.get('used');
+			});
+		}
+
+		if( userTicket ){ data.hasTicket = true;}
+		if( userUsedTicket ){ data.hasUsedTicket = true; }
+		// Populate avatar
+		users.fetchFilter(function(user){
+			var ticket;
+			if(req.session.passport.user && req.session.passport.user.username){
+				ticket = tickets.find(function(ticket){
+					return ticket.get('user') === req.session.passport.user.username;
+				});
+			}
+
+			if(ticket){
+				ticket.set('avatar', user.data.avatar_url);
+			}
+
+			return;
+		}).then(function(){
+			data.attendeesOnEvent = tickets.filter(function(item){
+				return item.get('used');
+			}).map(function(item){
+				return item.toJSON();
+			});
+
+			data.attendeesNotEvent = tickets.filter(function(item){
+				return !item.get('used');
+			}).map(function(item){
+				return item.toJSON();
+			});
+
+			res.render('events/ongoing',data);
+		}).catch(function(err){
+			res.send(500, err);
+		});
+	}).catch(function(err){
+		res.send(500, err);
+	});
+};
+
+var renderFinished = function(event, req, res){res.send('hi');};
+
+eventsController.get('/:slug', function (req, res) {
+	var events  = new Events();
 
 	events.fetchOne(function(item){
 		return item.slug === req.params.slug;
 	}).then(function(event){
 		if(!event){ return res.send(404, 'Event not found');}
 
-		var data = {
-			event : event.toJSON(),
-			user : req.session.passport.user
+		if( event.get('status') === 'active' ){renderActive(event, req, res);}
+		if( event.get('status') === 'ongoing' ){renderOngoing(event, req, res);}
+		if( event.get('status') === 'finished' ){renderFinished(event, req, res);}
+	});
+});
+
+eventsController.post('/:slug/ticket', function (req, res) {
+	var events = new Events(),
+		tickets = new Tickets(),
+		event;
+
+	events.fetchOne(function(item) {
+		return item.slug === req.params.slug;
+	}).then(function(_event) {
+		if (!_event) return res.send(404);
+		event = _event;
+
+		var newTicket = {
+			event  : event.get('slug'),
+			user   : req.session.passport.user.username,
+			used   : false
 		};
 
-		if(req.query['talk-send']){data.talkSend = true;}
-		if(req.query['talk-updated']){data.talkEdit = true;}
-
-		var qTickets = tickets.fetchFilter(function(item) {
-			console.log(item.event, event.get('slug'));
-			return item.event === event.get('slug');
-		});
-
-		var qTalks = talks.fetchFilter(function(item){
-			return item.event === event.get('slug') && item.user === req.session.passport.user.username;
-		});
-
-		Promise.all([qTickets,qTalks])
-		.then(function(){
-			if(talks.length > 0){
-				data.talk = talks.first().toJSON();
-			}
-
-			var userTicket;
-			if(req.session.passport.user && req.session.passport.user.username){
-				userTicket = tickets.find(function(item){
-					return item.get('user') === req.session.passport.user.username;
-				});
-			}
-
-			if( userTicket ){ data.hasTicket = true;}
-
-			// // Populate avatar
-			users.fetchFilter(function(user){
-				var ticket;
-				if(req.session.passport.user && req.session.passport.user.username){
-					ticket = tickets.find(function(ticket){
-						return ticket.get('user') === req.session.passport.user.username;
-					});
-				}
-
-				if(ticket){
-					ticket.set('avatar', user.data.avatar_url);
-				}
-
-				return;
-			}).then(function(){
-				data.attendees = tickets.toJSON();
-
-				res.render('events/call-for-proposals',data);
-			}).catch(function(err){
-				res.send(500, err);
-			});
-		}).catch(function(err){
-			res.send(500, err);
-		});
+		var ticket = tickets.add(newTicket);
+		return ticket.save();
+	}).then(function() {
+		res.redirect('/eventos/'+event.get('slug')+'?ticket=success');
 	});
 });
 
@@ -120,30 +215,6 @@ eventsController.post('/:slug/call-for-proposals', function (req, res) {
 	});
 });
 
-eventsController.post('/:slug/ticket', function (req, res) {
-	var events = new Events(),
-		tickets = new Tickets(),
-		event;
-
-	events.fetchOne(function(item) {
-		return item.slug === req.params.slug;
-	}).then(function(_event) {
-		if (!_event) return res.send(404);
-		event = _event;
-
-		var newTicket = {
-			event  : event.get('slug'),
-			user   : req.session.passport.user.username,
-			used   : false
-		};
-
-		var ticket = tickets.add(newTicket);
-		return ticket.save();
-	}).then(function() {
-		res.redirect('/eventos/'+event.get('slug')+'?ticket=success');
-	});
-});
-
 eventsController.post('/:slug/talks/:id/edit', function(req, res){
 	var talks  = new Talks();
 
@@ -168,8 +239,40 @@ eventsController.post('/:slug/talks/:id/edit', function(req, res){
 			res.redirect('/eventos/'+ req.params.slug + '?talk-updated=true');
 		}).catch(function(err){
 			res.send(500, err);
-		})
+		});
 
+	}).catch(function(err){
+		res.send(500, err);
+	});
+});
+
+eventsController.post('/:slug/check-in', function(req, res){
+	var tickets = new Tickets();
+
+	tickets.fetchFilter(function(item){
+		return item.user  === req.session.passport.user.username &&
+			item.event === req.params.slug;
+	}).then(function(){
+		var ticket;
+
+		if(tickets.length > 0){
+			// set ticket as used
+			ticket = tickets.first();
+			ticket.set('used', true);
+		}else{
+			// create ticket
+			var ticketData = {
+				event  : req.params.slug,
+				user   : req.session.passport.user.username,
+				used   : true
+			};
+
+			ticket = tickets.add(ticketData);
+		}
+		
+		return ticket.save();
+	}).then(function(){
+		res.redirect('/eventos/'+ req.params.slug );
 	}).catch(function(err){
 		res.send(500, err);
 	});
