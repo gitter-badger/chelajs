@@ -12,10 +12,12 @@
 			<div class="row ">
 				<div class="col-md-7">
 					<h1>{{event.name}}</h1>
+					<p><b>Lugar</b> {{event.place}}</p>
+					<p><b>Dirección</b> {{event.address}}</p>
+					<p><b>Fecha</b> {{ event.date }} <b>hora</b> {{ event.hour_start }} - {{ event.hour_end }}</p>
 					{% autoescape false %}
 					<p>{{event.description}}</p>
 					{% endautoescape %}
-					{{ event.date }} {{ event.hour_start }} - {{ event.hour_end }}
 				</div>
 				<div class="col-md-5">
 				{% if user %}
