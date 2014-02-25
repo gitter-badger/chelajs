@@ -38,7 +38,11 @@ var renderActive = function(event, req, res){
 	});
 
 	var qTalks = talks.fetchFilter(function(item){
-		return item.event === event.get('slug') && item.user === req.session.passport.user.username;
+		if(req.session.passport.user){
+			return item.event === event.get('slug') && item.user === req.session.passport.user.username;
+		}else{
+			return false;
+		}
 	});
 
 	Promise.all([qTickets,qTalks])
