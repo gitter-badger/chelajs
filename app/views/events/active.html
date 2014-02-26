@@ -31,11 +31,13 @@
 					{% endif %}
 
 					<h4>Asistentes({{attendees.length}})</h4>
-					<ul>
+					<div class="avatar-wall row">
 					{% for attendee in attendees %}
-						<li><img height="50" width="50" src="{{attendee.avatar}}">{{attendee.user}}</li>
+						<div class="col-xs-2">
+							<img class="tooltip-holder" src="{{attendee.avatar}}" data-toggle="tooltip" data-placement="bottom" title="{{attendee.user}}">
+						</div>
 					{% endfor %}
-					</ul>
+					</div>
 
 
 					{% if talkSend %}
@@ -69,4 +71,9 @@
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+	<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function(){ $('.tooltip-holder').tooltip() });
+	</script>
 {% endblock %}
