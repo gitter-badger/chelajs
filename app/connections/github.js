@@ -31,7 +31,7 @@ var connection = function (server) {
 					var q = newUser.save();
 
 					q.then(function(){
-						done(null, newUser.toJSON() );
+						done(null, profile );
 					}).catch(function(err){
 						done(err);
 					});
