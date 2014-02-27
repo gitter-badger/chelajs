@@ -35,18 +35,22 @@
 					{% endif %}				
 
 					<h4>Asistentes en el evento({{attendeesOnEvent.length || '0'}})</h4>
-					<ul>
+					<div class="avatar-wall row">
 					{% for attendee in attendeesOnEvent %}
-						<li><img src="{{attendee.avatar}}">{{attendee.user}}</li>
+						<div class="col-xs-2">
+							<img class="tooltip-holder" src="{{attendee.avatar}}" data-toggle="tooltip" data-placement="bottom" title="{{attendee.user}}">
+						</div>
 					{% endfor %}
-					</ul>
+					</div>				
 
 					<h4>Asistentes que todavia no llegan al evento({{attendeesNotEvent.length || '0'}})</h4>
-					<ul>
+					<div class="avatar-wall row">
 					{% for attendee in attendeesNotEvent %}
-						<li><img src="{{attendee.avatar}}">{{attendee.user}}</li>
+						<div class="col-xs-2">
+							<img class="tooltip-holder" src="{{attendee.avatar}}" data-toggle="tooltip" data-placement="bottom" title="{{attendee.user}}">
+						</div>
 					{% endfor %}
-					</ul>					
+					</div>
 				</div>
 			</div>
 		</div>

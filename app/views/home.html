@@ -21,6 +21,16 @@
 							<div>Fecha del evento: <b>{{event.date}}</b></div>
 							<div>{{event.except}}</div>
 							<div>Consigue tu boleto <a href="/eventos/{{event.slug}}">aqui</a></div>
+						{% elseif event.status == 'ongoing' %}
+							<h2>{{event.name}}</h2>
+							<div><b>Esta sucediendo en este momento</b></div>
+							<div>{{event.except}}</div>
+							<div>Haz check in <a href="/eventos/{{event.slug}}">aqui</a></div>						
+						{% elseif event.status == 'finished' %}
+							<h2>{{event.name}}</h2>
+							<div>Evento termidando</div>
+							<div>{{event.except}}</div>
+							<div>Deja tu review <a href="/eventos/{{event.slug}}">aqui</a></div>
 						{% else %}
 							<h2>Siguiente evento</h2>
 							<div>Estamos buscando lugar para el evento de Febrero, fecha ideal 27 de febrero</div>

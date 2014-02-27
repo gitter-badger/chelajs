@@ -17,10 +17,10 @@
 					<p>{{event.description}}</p>
 					{% endautoescape %}
 
-					<div class="reviews">
+					<div class="reviews avatar-wall ">
 						{% for review in reviews %}
 						<div class="review">
-							<p><img src="{{review.avatar}}">{{review.user}}</p>
+							<p><img class="tooltip-holder" src="{{review.avatar}}" data-toggle="tooltip" data-placement="bottom" title="{{review.user}}">{{review.user}}</p>
 							<p>{{review.review}}</p>
 						</div>
 						{% endfor %}
@@ -39,11 +39,13 @@
 					{% endif %}				
 
 					<h4>Asistentes al evento({{attendees.length || '0'}})</h4>
-					<ul>
+					<div class="avatar-wall row">
 					{% for attendee in attendees %}
-						<li><img src="{{attendee.avatar}}">{{attendee.user}}</li>
+						<div class="col-xs-2">
+							<img class="tooltip-holder" src="{{attendee.avatar}}" data-toggle="tooltip" data-placement="bottom" title="{{attendee.user}}">
+						</div>
 					{% endfor %}
-					</ul>				
+					</div>							
 				</div>
 			</div>
 		</div>
