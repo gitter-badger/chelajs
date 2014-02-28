@@ -11,6 +11,9 @@
 		<div class="container">
 			<div class="row ">
 				<div class="col-md-7">
+					{% if !user %}
+						<h4><a href="/auth/github">Log In</a></h4>
+					{% endif %}
 					<h1>{{event.name}}</h1>
 					{% autoescape false %}
 					<p>{{event.description}}</p>
