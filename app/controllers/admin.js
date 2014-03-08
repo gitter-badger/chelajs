@@ -187,4 +187,8 @@ adminController.get('/talks', function (req, res) {
 	});
 });
 
+var utilsController = require('./utils');
+
+adminController.attach(utilsController);
+
 module.exports = adminController;
