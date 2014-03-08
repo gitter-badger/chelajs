@@ -11,9 +11,6 @@
 		<div class="container">
 			<div class="row ">
 				<div class="col-md-7">
-					{% if !user %}
-						<h4><a href="/auth/github">Log In</a></h4>
-					{% endif %}
 					<h1>{{event.name}}</h1>
 					{% autoescape false %}
 					<p>{{event.description}}</p>
@@ -34,7 +31,8 @@
 								<button class="btn btn-primary">Hacer check in</button>
 						</form>						
 					{% else %}				
-						<h4>Haz log in para hacer log in al evento</h4>
+						<h4>Haz log in para hacer check in al evento</h4>
+						<a href="/auth/github" class="btn btn-primary">Hacer check in</a>
 					{% endif %}				
 
 					<h4>Asistentes en el evento({{attendeesOnEvent.length || '0'}})</h4>

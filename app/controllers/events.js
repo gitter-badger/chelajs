@@ -62,8 +62,6 @@ var renderActive = function(event, req, res){
 
 		// Populate avatar
 		return users.fetchFilter(function(user){
-			if( !(req.session.passport.user && req.session.passport.user.username) ){return;}
-
 			var avatarTicket = tickets.find(function(ticket){
 				return ticket.get('user') === user.username;
 			});
@@ -111,8 +109,6 @@ var renderOngoing = function(event, req, res){
 		
 		// Populate avatar
 		return users.fetchFilter(function(user){
-			if( !(req.session.passport.user && req.session.passport.user.username) ){return;}
-
 			var avatarTicket = tickets.find(function(ticket){
 				return ticket.get('user') === user.username;
 			});
@@ -170,9 +166,8 @@ var renderFinished = function(event, req, res){
 
 		// Populate avatar
 		return users.fetchFilter(function(user){
-			if( !(req.session.passport.user && req.session.passport.user.username) ){return;}
-
 			var avatarTicket = tickets.find(function(ticket){
+				console.log(ticket.get('user') === user.username, ticket.get('user'), user.username);
 				return ticket.get('user') === user.username;
 			});
 
