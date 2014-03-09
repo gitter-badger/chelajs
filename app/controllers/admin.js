@@ -87,22 +87,38 @@ adminController.post('/events/new', function (req, res) {
 });
 
 adminController.get('/events/edit/:slug', function (req, res) {
-	var events = new Events();
+	var events  = new Events();
+	var users   = new Users();
 	var tickets = new Tickets();
+	var event;
 
 	events.fetchOne(function(item){
 		return item.slug === req.params.slug;
 	}).then(function(vent){
 		if(!vent){ return res.send(404, 'Event doesnt exist'); }
+		event = vent;
 
-		tickets.fetchFilter(function(item) {
+		return tickets.fetchFilter(function(item) {
 			return item.event === vent.get('slug');
-		}).then(function(){
-			// console.log(tickets.toJSON());
-			res.render('admin/events-edit',{
-				event : vent.toJSON(),
-				tickets : tickets.toJSON()
+		});
+	}).then(function () {
+		return users.fetchFilter(function(user){
+			var ticket = tickets.find(function(ticket){
+				return ticket.get('user') === user.username;
 			});
+
+			if(ticket){
+				ticket.set('displayName', user.displayName);
+
+				if(user.emails && user.emails[0] && user.emails[0].value){
+					ticket.set('email', user.emails[0].value);
+				}
+			}
+		});
+	}).then(function () {
+		res.render('admin/events-edit',{
+			event : event.toJSON(),
+			tickets : tickets.toJSON()
 		});
 	}).catch(function(err){
 		res.send(500, err);
