@@ -64,10 +64,12 @@ githubConnection(server);
 var homeController = require('./app/controllers/home');
 var adminController = require('./app/controllers/admin');
 var eventsController = require('./app/controllers/events');
+var profilesController = require('./app/controllers/profiles');
 
 homeController(server);
 adminController(server);
 eventsController(server);
+profilesController(server);
 
 server.listen(3000);
 console.log('Server booted at', new Date() );
