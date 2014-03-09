@@ -11,6 +11,9 @@ swig.setDefaults({
 	root: './app/views',
 	cache : false
 });
+var swigHelpers = require('./app/views/helpers');
+swigHelpers(swig);
+
 server.engine('html', swig.renderFile);
 server.set('view engine', 'html');
 server.set('views', __dirname + '/app/views');

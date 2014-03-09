@@ -32,14 +32,14 @@
 						</form>						
 					{% else %}				
 						<h4>Haz log in para hacer check in al evento</h4>
-						<a href="/auth/github" class="btn btn-primary">Hacer check in</a>
+						<a href="/auth/github" class="btn btn-primary">Log in</a>
 					{% endif %}				
 
 					<h4>Asistentes en el evento({{attendeesOnEvent.length || '0'}})</h4>
 					<div class="avatar-wall row">
 					{% for attendee in attendeesOnEvent %}
 						<div class="col-xs-2">
-							<img class="tooltip-holder" src="{{attendee.avatar}}" data-toggle="tooltip" data-placement="bottom" title="{{attendee.user}}">
+							{% include "../partials/avatar.html" with attendee %}
 						</div>
 					{% endfor %}
 					</div>				
@@ -48,7 +48,7 @@
 					<div class="avatar-wall row">
 					{% for attendee in attendeesNotEvent %}
 						<div class="col-xs-2">
-							<img class="tooltip-holder" src="{{attendee.avatar}}" data-toggle="tooltip" data-placement="bottom" title="{{attendee.user}}">
+							{% include "../partials/avatar.html" with attendee %}
 						</div>
 					{% endfor %}
 					</div>

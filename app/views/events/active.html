@@ -24,7 +24,7 @@
 					<div class="avatar-wall row">
 					{% for attendee in attendees %}
 						<div class="col-xs-2">
-							<img class="tooltip-holder" src="{{attendee.avatar}}" data-toggle="tooltip" data-placement="bottom" title="{{attendee.user}}">
+							{% include "../partials/avatar.html" with attendee %}
 						</div>
 					{% endfor %}
 					</div>

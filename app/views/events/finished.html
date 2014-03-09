@@ -17,10 +17,10 @@
 					<p>{{event.description}}</p>
 					{% endautoescape %}
 
-					<div class="reviews avatar-wall ">
+					<div class="reviews">
 						{% for review in reviews %}
 						<div class="review">
-							<p><img class="tooltip-holder" src="{{review.avatar}}" data-toggle="tooltip" data-placement="bottom" title="{{review.user}}">{{review.user}}</p>
+							<h6>{% include "../partials/avatar.html" with review %} {{review.user}}</h6>
 							<p>{{review.review}}</p>
 						</div>
 						{% endfor %}
@@ -42,7 +42,7 @@
 					<div class="avatar-wall row">
 					{% for attendee in attendees %}
 						<div class="col-xs-2">
-							<img class="tooltip-holder" src="{{attendee.avatar}}" data-toggle="tooltip" data-placement="bottom" title="{{attendee.user}}">
+							{% include "../partials/avatar.html" with attendee %}
 						</div>
 					{% endfor %}
 					</div>							
