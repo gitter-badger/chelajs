@@ -43,9 +43,9 @@
 					</p>
 				</div>
 				{% else %}
-				<form class="navbar-form navbar-right" action="/auth/github">
-					<button type="submit" class="btn btn-primary"><i class="fa fa-github"></i> Haz log in with github</a></button>
-				</form>
+				<div class="navbar-form navbar-right" >
+					<a href="/auth/github" class="btn btn-primary"><i class="fa fa-github"></i> Haz log in with github</a></a>
+				</div>
 				{% endif %}
 			</div>
 		</div>
@@ -64,6 +64,16 @@
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+	<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function () {
+		$('a[href="/auth/github"]').each(function(i, item){
+			var $item = $(item);
+			$item.attr('href', $item.attr('href') + '?redirect-to=' + window.location.pathname )
+		});
+	});
+	</script>	
 	{% block js %}{% endblock %}
 </body>
 </html>

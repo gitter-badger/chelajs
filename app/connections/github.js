@@ -40,11 +40,24 @@ var connection = function (server) {
 		}
 	));
 
-	server.get('/auth/github', passport.authenticate('github') );
+	server.get('/auth/github', function(req, res, next){
+		if(req.query['redirect-to']){
+			req.session.redirectTo = req.query['redirect-to'];
+		}
+
+		next();
+	},passport.authenticate('github') );
 
 	server.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/?login-failed=true' }),
 	function(req, res) {
-		res.redirect('/');
+		if(req.session.redirectTo){
+			var redirectTo = req.session.redirectTo;
+			delete req.session.redirectTo;
+
+			res.redirect(redirectTo);
+		}else{
+			res.redirect('/');
+		}
 	});
 };
 
