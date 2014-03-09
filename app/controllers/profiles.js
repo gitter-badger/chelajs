@@ -45,9 +45,7 @@ profileController.get('/:userName', function (req, res) {
 		return events.fetchFilter(function (item) {return eventsAssisted.indexOf(item.slug) >= 0; });
 	}).then(function () {
 		var updatedBio = req.query['update-bio'] ? true : false;
-		var bioAsHtml  = marked(user.get('bio'));
-
-		console.log('bioAsHtml?', bioAsHtml);
+		var bioAsHtml  = marked(user.get('bio') || '');
 
 		res.render('profiles/profile', {
 			currentUser  : user.toJSON(),
