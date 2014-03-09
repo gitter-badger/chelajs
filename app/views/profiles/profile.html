@@ -10,9 +10,22 @@
 	<div class="main first-container">
 		<div class="container">
 			<div class="row ">
-				<div class="col-md-7">
+				<div class="col-md-7 profile">
 					<h2>{{currentUser.username}}</h2>
 					<p><a class="btn btn-primary" href="{{currentUser.profileUrl}}"><i class="fa fa-github"></i> Github</a></p>
+					{% if profileOwner %}
+						<div class="bio">
+							<form method="POST" action="/perfil/{{currentUser.username}}/update-bio">
+								<h4>Edita tu perfil</h4>
+								{% if updatedBio %}<p>Perfil actualizado</p>{% endif %}
+								<p><textarea name="bio">{{ currentUser.bio }}</textarea></p>
+								<p class="small">Puedes usar markdown, para agregar estilo a tu bio</p>
+								<p><button class="btn btn-primary">Salvar</button></p>
+							</form>
+						</div>
+					{% else %}
+						<div class="bio">{% autoescape false %}{{ bioAsHtml }}{% endautoescape %}</div>
+					{% endif %}
 				</div>
 				<div class="col-md-5">
 					<h4>Eventos a los que ha asistido</h4>
