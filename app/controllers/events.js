@@ -212,11 +212,20 @@ eventsController.post('/:slug/ticket', function (req, res) {
 		tickets = new Tickets(),
 		event;
 
-	events.fetchOne(function(item) {
+	var qEvents = events.fetchFilter(function(item) {
 		return item.slug === req.params.slug;
-	}).then(function(_event) {
-		if (!_event) return res.send(404);
-		event = _event;
+	});
+
+	var qTickets = tickets.fetchFilter(function(item) {
+		return	item.user === req.session.passport.user.username &&
+				item.event === req.params.slug;
+	});
+
+	Promise.all([qEvents, qTickets]).then(function() {
+		if (!events.length) return res.send(404);
+		event = events.first();
+
+		if (tickets.length){return res.redirect('/eventos/'+event.get('slug')+'?ticket=success');}
 
 		var newTicket = {
 			event  : event.get('slug'),
@@ -228,6 +237,8 @@ eventsController.post('/:slug/ticket', function (req, res) {
 		return ticket.save();
 	}).then(function() {
 		res.redirect('/eventos/'+event.get('slug')+'?ticket=success');
+	}).catch(function (err) {
+		res.send(500, err);
 	});
 });
 
@@ -334,14 +345,13 @@ eventsController.post('/:slug/review', function(req, res){
 		var ticket;
 
 		if(tickets.length === 0){
-			res.send(404, 'Not an attendee')
+			res.send(404, 'Not an attendee');
 		}else{
 			ticket = tickets.first();
 			ticket.set('review', req.body.review);
 
 			return ticket.save();
 		}
-		
 	}).then(function(){
 		res.redirect('/eventos/'+ req.params.slug + '?review=success');
 	}).catch(function(err){
