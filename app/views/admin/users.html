@@ -9,15 +9,20 @@
 {% endblock %}
 
 {% block content %}
+	<h1 class="page-header">Usuarios</h1>
 	<div class="main">
 		<div class="container">
 			{% for user in users %}
 			<div class="row list">
-				<div class="col-md-3">
-					<img class="avatar" src="{{ user.data.avatar_url }}">
-					<span>{{ user.username }}</span>
+				<div class="col-xs-1">
+					<a class="avatar" href="/perfil/{{ user.username }}">
+						<img class="tooltip-holder" src="{{ user.data.avatar_url }}" data-toggle="tooltip" data-placement="bottom" title="{{ user.username }}">
+					</a>
 				</div>
-				<div class="col-md-7">
+				<div class="col-xs-3">
+					{{ user.username }}
+				</div>				
+				<div class="col-xs-8">
 					{% if user.emails[0].value !== null && user.emails[0].value !== ''  %}
 						{{ user.emails[0].value }}
 					{% else %}

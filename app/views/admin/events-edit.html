@@ -4,20 +4,20 @@
 
 {% block head %}
 	{% parent %}
-
-	<link rel="stylesheet" href="/css/admin.css">
 	<link rel="stylesheet" href="/css/date-picker/jquery-ui-1.10.4.custom.min.css">
 {% endblock %}
 
 {% block content %}
-	<div class="main">
-		<div class="container">
+	<h1 class="page-header">
+		{% if event.name %}
+		{{ event.name }}
+		{% else %}
+		Create new event
+		{% endif %}
+	</h1>
+	<div class="">
+		<div class="">
 			<form method="POST">
-				{% if event.name %}
-				<h1>{{ event.name }}</h1>
-				{% else %}
-				<h1>Create new event</h1>
-				{% endif %}
 				<div class="row list">
 					<div class="col-sm-2">
 						<span>Name</span>
