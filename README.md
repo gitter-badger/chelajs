@@ -6,6 +6,16 @@ Running ChelaJs repo
 
 ChelaJs uses LevelDb as Database and session store, so no extra dependencies are needed, just node modules.
 
+## Starting the server
+
+ChelaJS requires the `NODE_PATH` variable to include the directory `./local_modules` e.g.
+
+    NODE_PATH='$NODE_PATH:./local_modules' node server.js
+
+If you use nodemon, this is configure in `nodemon.json` so alternatively you can just run
+
+    nodemon
+
 ## Conf file
 
 Copy sample config to config folder and add a github keys to sample
