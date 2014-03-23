@@ -9,11 +9,15 @@
 {% endblock %}
 
 {% block content %}
+	{% if eventType == "meetup" %}
 	<h1 class="page-header">Eventos</h1>
+	{% else %}
+	<h1 class="page-header">Sesiones de programación</h1>
+	{% endif %}
 	<div class="main">
 		<div class="events">
 			<div class="row create">
-				<a href="/admin/events/new" class="btn btn-primary" role="button">
+				<a href="/admin/{{eventType}}/new" class="btn btn-primary" role="button">
 					<i class="fa fa-plus-circle"></i>
 					New event
 				</a>
@@ -21,14 +25,14 @@
 			{% for event in events %}
 			<div class="row list event" data-slug="{{event.slug}}">
 				<div class="col-xs-4">
-					<a href="/admin/events/edit/{{ event.slug }}">{{ event.name }}</a>
+					<a href="/admin/{{eventType}}/edit/{{ event.slug }}">{{ event.name }}</a>
 				</div>
 				<div class="col-xs-6">
 					{{ event.date }} {{event.hour_start}} &mdash; {{ event.hour_end }}
 				</div>
 				{% if event.current %}
 				<button class="btn btn-success btn-current col-xs-1">
-					<i class="fa fa-arrow-circle-down"></i>
+					<i class="fa fa-check-circle"></i>
 				</button>
 				{% else %}
 				<button class="btn btn-default has-spinner set-as-current col-xs-1">
@@ -65,7 +69,7 @@
 <script src="/js/vendors/jquery.2.0.3.min.js"></script>
 <script>
 	var notCurrentTpl = '<i class="fa fa-arrow-circle-up"></i>';
-	var CurrentTpl = '<i class="fa fa-arrow-circle-down"></i>';
+	var CurrentTpl = '<i class="fa fa-check-circle"></i>';
 	var ProcesingTpl = '<i class="fa fa-spin fa-refresh"></i>';
 
 	$.fn.renderNotCurrent = function renderNotCurrent() {
@@ -93,7 +97,7 @@
 		$this.closest('.events').find('.btn-current').renderNotCurrent()
 		$this.addClass('working').html(ProcesingTpl);
 
-		var xhr = $.post('/admin/events/set-as-current', {slug: slug})
+		var xhr = $.post('/admin/{{eventType}}/set-as-current', {slug: slug})
 		xhr.always(function(){
 			$this.removeClass('working').html(CurrentTpl);
 		})

@@ -8,13 +8,18 @@
 {% endblock %}
 
 {% block content %}
-	<h1 class="page-header">
-		{% if event.name %}
-		{{ event.name }}
+	{% if !event|isEmpty %}
+		<h1 class="page-header">
+			{{ event.name }}
+			<p class="small">{{eventType}}</p>
+		</h1>
+	{% else %}
+		{% if eventType == "meetup" %}
+			<h1 class="page-header">Crea un evento</h1>
 		{% else %}
-		Create new event
+			<h1 class="page-header">Crea una sesión de programación</h1>
 		{% endif %}
-	</h1>
+	{% endif %}
 	<div class="">
 		<div class="">
 			<form method="POST">
@@ -108,6 +113,7 @@
 					{% endif %}
 				</div>
 			</form>
+			{% if !event|isEmpty %}
 			<h3>Attendees</h3>
 			<div class="row list">
 				<div class="col-xs-3"><h4>Nombre</h4></div>
@@ -123,6 +129,7 @@
 				<div class="col-xs-2"><span>{{ ticket.used }}</span></div>
 				{% endfor %}
 			</div>
+			{% endif %}
 		</div>
 	</div>
 {% endblock %}
@@ -144,11 +151,13 @@
         };
 		var autocomplete = new google.maps.places.Autocomplete(document.getElementById('address'), options);
         google.maps.event.addListener(autocomplete, 'place_changed', function( e ) {
-        	e.preventDefault();
         	var place = autocomplete.getPlace();
         	if (place.geometry) {
         		console.log( place.geometry );
         	}
+
+        	// e doesnt exits, but this prevets the form from been send;
+        	e.preventDefault();
         });
 	</script>
 {% endblock %}
