@@ -7,7 +7,6 @@ _.str = require('underscore.string');
 
 var Users = require('../collections/users'),
 	Events = require('../collections/events'),
-	Talks = require('../collections/talks'),
 	Tickets = require('../collections/tickets');
 
 var adminController = controller({
@@ -19,8 +18,7 @@ adminController.beforeEach(function(req, res, next){
 		'/': 'Home',
 		'/admin/': 'Admin',
 		'/admin/users': 'Users',
-		'/admin/events': 'Events',
-		'/admin/talks': 'Talks'
+		'/admin/events': 'Events'
 	};
 	// Validates that user is an admin in the conf file
 	if(req.session &&
@@ -75,6 +73,7 @@ adminController.post('/events/new', function (req, res) {
 		if(events.length > 0){return res.send('Error: Event already exist');}
 
 		req.body.slug = slug;
+		req.body.type = Events.Type.MEETUP;
 		vent = events.add(req.body);
 
 		return vent.save();
@@ -189,17 +188,6 @@ adminController.post('/events/set-as-current', function(req, res) {
 	}).catch(function(err) {
 		var status = err.status || 500;
 		res.send(status, err);
-	});
-});
-
-adminController.get('/talks', function (req, res) {
-	var talks = new Talks();
-	talks.fetch().then(function(){
-		res.render('admin/talks',{
-			talks : talks.toJSON()
-		});
-	}).catch(function(err) {
-		res.send(err.status || 500, err);
 	});
 });
 

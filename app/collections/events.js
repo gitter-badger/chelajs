@@ -9,4 +9,10 @@ var Events = Backbone.Collection.extend({
 	model : EventsModel
 });
 
+//TODO validate that an event's type is one of these
+Events.Types = {
+	MEETUP: 'meetup',
+	CODING: 'coding'
+};
+
 module.exports = Events;
