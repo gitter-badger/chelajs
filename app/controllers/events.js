@@ -34,7 +34,6 @@ var renderActive = function(event, req, res){
 	});
 
 	qTickets.then(function(){
-
 		var userTicket;
 		if(req.session.passport.user && req.session.passport.user.username){
 			userTicket = tickets.find(function(item){
@@ -149,6 +148,7 @@ var renderFinished = function(event, req, res){
 
 		if( userTicket ){ data.hasTicket = true;}
 		if( userUsedTicket ){ data.hasUsedTicket = true; }
+		data.currentTicket = userUsedTicket.toJSON();
 
 		// Populate avatar
 		return users.fetchFilter(function(user){
@@ -172,6 +172,8 @@ var renderFinished = function(event, req, res){
 		}).map(function(item){
 			return item.toJSON();
 		});
+
+		console.log(data);
 
 		res.render('events/finished',data);
 	}).catch(function(err){

@@ -14,12 +14,6 @@ var adminController = controller({
 });
 
 adminController.beforeEach(function(req, res, next){
-	res.data.breadcrumbs = {
-		'/': 'Home',
-		'/admin/': 'Admin',
-		'/admin/users': 'Users',
-		'/admin/events': 'Events'
-	};
 	// Validates that user is an admin in the conf file
 	if(req.session &&
 	req.session.passport &&
@@ -82,7 +76,6 @@ adminController.post('/events/new', function (req, res) {
 	}).catch(function(err){
 		res.send(500, err);
 	});
-
 });
 
 adminController.get('/events/edit/:slug', function (req, res) {
@@ -142,7 +135,6 @@ adminController.post('/events/edit/:slug', function (req, res) {
 	}).catch(function(err){
 		res.send(500, err);
 	});
-
 });
 
 adminController.post('/events/set-as-current', function(req, res) {

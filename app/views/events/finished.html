@@ -29,10 +29,17 @@
 				<div class="col-md-5">
 					{% if user and hasUsedTicket %}
 						<h4>Gracias por asistir al evento</h4>
-						<p>Deja in review del evento</p>
+						{% if reviewUpdated %}
+						<h4>Gracias por dejar una reseña</h4>
+						{% endif %}
+						<p>Deja una reseña del evento</p>
 						<form class="call-for-proposals" method="POST" action="/eventos/{{event.slug}}/review">
-							<p><textarea name="review">{{talk.review}}</textarea></p>
-							<p class="right"><button class="btn btn-default">Enviar review</button></p>
+							<p><textarea name="review">{{currentTicket.review}}</textarea></p>
+							{% if currentTicket.review %}
+							<p class="right"><button class="btn btn-default">Actualiza tu reseña</button></p>
+							{% else %}
+							<p class="right"><button class="btn btn-default">Enviar reseña</button></p>
+							{% endif %}
 						</form>				
 					{% else %}				
 						<h4>Si fuiste al evento, haz log in para dejar tu review</h4>
