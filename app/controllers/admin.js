@@ -154,56 +154,6 @@ var eventEdit = function (eventType) {
 	};
 };
 
-var eventSetCurrent = function (eventType) {
-	return function(req, res) {
-		var slug = req.body.slug,
-		events = new Events();
-
-		if (!slug) {
-			return res.send(404, {error: 'Event doesnt exist'});
-		}
-
-		var unsetCurrent = function() {
-			return events.fetchOne(function (item) {
-				return item.current  &&
-					item.type === eventType;
-			}).then(function(current) {
-				if(!current) return true;
-
-				current.set('current', false);
-				return current.save();
-			}).then(function() {
-				return true;
-			});
-		};
-
-		var setCurrent = function(slug) {
-			return events.fetchOne(function (item) {
-				return item.slug === slug  &&
-					item.type === eventType;
-			}).then(function(newCurrent) {
-				if(!newCurrent){
-					var err = new Error('object not found');
-					err.status = 404;
-					throw err;
-				}
-
-				newCurrent.set('current', true);
-				return newCurrent.save();
-			}).then(function() {
-				return true;
-			});
-		};
-
-		Promise.all([unsetCurrent(), setCurrent(slug)]).then(function(results) {
-			res.send({results: results});
-		}).catch(function(err) {
-			var status = err.status || 500;
-			res.send(status, err);
-		});
-	};
-};
-
 adminController.get('/meetup', eventList(Events.Types.MEETUP));
 adminController.get('/coding', eventList(Events.Types.CODING));
 
@@ -219,8 +169,101 @@ adminController.get('/coding/edit/:slug', eventSingle(Events.Types.CODING));
 adminController.post('/meetup/edit/:slug', eventEdit(Events.Types.MEETUP));
 adminController.post('/coding/edit/:slug', eventEdit(Events.Types.CODING));
 
-adminController.post('/meetup/set-as-current', eventSetCurrent(Events.Types.MEETUP));
-adminController.post('/coding/set-as-current', eventSetCurrent(Events.Types.CODING));
+adminController.post('/meetup/set-as-current', function(req, res) {
+	var slug = req.body.slug,
+	events = new Events();
+
+	if (!slug) {
+		return res.send(404, {error: 'Event doesnt exist'});
+	}
+
+	var unsetCurrent = function() {
+		return events.fetchOne(function (item) {
+			return item.current  &&
+				item.type === Events.Types.MEETUP;
+		}).then(function(current) {
+			if(!current) return true;
+
+			current.set('current', false);
+			return current.save();
+		}).then(function() {
+			return true;
+		});
+	};
+
+	var setCurrent = function(slug) {
+		return events.fetchOne(function (item) {
+			return item.slug === slug  &&
+				item.type === Events.Types.MEETUP;
+		}).then(function(newCurrent) {
+			if(!newCurrent){
+				var err = new Error('object not found');
+				err.status = 404;
+				throw err;
+			}
+
+			newCurrent.set('current', true);
+			return newCurrent.save();
+		}).then(function() {
+			return true;
+		});
+	};
+
+	Promise.all([unsetCurrent(), setCurrent(slug)]).then(function(results) {
+		res.send({results: results});
+	}).catch(function(err) {
+		var status = err.status || 500;
+		res.send(status, err);
+	});
+});
+
+adminController.post('/coding/set-as-current', function (req, res) {
+	var slug = req.body.slug,
+		events = new Events();
+
+	if (!slug) {
+		return res.send(404, {error: 'Event doesnt exist'});
+	}
+
+	events.fetchOne(function (item) {
+		return item.slug === slug  &&
+			item.type === Events.Types.CODING;
+	}).then(function(current) {
+		if(!current) return false;
+
+		current.set('current', true);
+		return current.save();
+	}).then(function() {
+		res.send({success: true});
+	}).catch(function(err) {
+		var status = err.status || 500;
+		res.send(status, err);
+	});
+});
+
+adminController.post('/coding/unset-as-current', function (req, res) {
+	var slug = req.body.slug,
+		events = new Events();
+
+	if (!slug) {
+		return res.send(404, {error: 'Event doesnt exist'});
+	}
+
+	events.fetchOne(function (item) {
+		return item.slug === slug  &&
+			item.type === Events.Types.CODING;
+	}).then(function(current) {
+		if(!current) return false;
+
+		current.set('current', false);
+		return current.save();
+	}).then(function() {
+		res.send({success: true});
+	}).catch(function(err) {
+		var status = err.status || 500;
+		res.send(status, err);
+	});
+});
 
 var utilsController = require('./utils');
 

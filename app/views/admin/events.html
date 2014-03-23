@@ -31,11 +31,11 @@
 					{{ event.date }} {{event.hour_start}} &mdash; {{ event.hour_end }}
 				</div>
 				{% if event.current %}
-				<button class="btn btn-success btn-current col-xs-1">
+				<button class="btn btn-success btn-current col-xs-1 unset-as-current">
 					<i class="fa fa-check-circle"></i>
 				</button>
 				{% else %}
-				<button class="btn btn-default has-spinner set-as-current col-xs-1">
+				<button class="btn btn-default col-xs-1 set-as-current">
 					<i class="fa fa-arrow-circle-up"></i>
 				</button>
 				{% endif %}				
@@ -72,32 +72,33 @@
 	var CurrentTpl = '<i class="fa fa-check-circle"></i>';
 	var ProcesingTpl = '<i class="fa fa-spin fa-refresh"></i>';
 
-	$.fn.renderNotCurrent = function renderNotCurrent() {
+	$.fn.renderNotCurrent = function() {
 		this.each(function() {
 			$(this)
-			.removeClass('btn-current btn-success')
+			.removeClass('btn-current btn-success unset-as-current')
 			.addClass('btn-default has-spinner set-as-current')
 			.html(notCurrentTpl)
 		})
 		return this
 	}
-	$.fn.renderCurrent = function renderCurrent() {
+	$.fn.renderCurrent = function() {
 		this.each(function() {
 			$(this)
 			.removeClass('btn-default has-spinner set-as-current')
-			.addClass('btn-current btn-success')
+			.addClass('btn-current btn-success unset-as-current')
 			.html(CurrentTpl)
 		})
 		return this
 	}
 
+	{% if eventType === 'meetup' %}
 	$('.events').on('click', '.set-as-current', function (e){
 		var $this = $(this);
-		var slug = $this.closest('.event').data('slug')
-		$this.closest('.events').find('.btn-current').renderNotCurrent()
+		var slug = $this.closest('.event').data('slug');
+		$this.closest('.events').find('.btn-current').renderNotCurrent();
 		$this.addClass('working').html(ProcesingTpl);
 
-		var xhr = $.post('/admin/{{eventType}}/set-as-current', {slug: slug})
+		var xhr = $.post('/admin/meetup/set-as-current', {slug: slug})
 		xhr.always(function(){
 			$this.removeClass('working').html(CurrentTpl);
 		})
@@ -105,7 +106,45 @@
 			$this.renderCurrent()
 		}, function(){
 			// deal with error
+		});
+	});
+	{% endif %}
+
+	{% if eventType === 'coding' %}
+	$('.events').on('click', '.set-as-current', function (e){
+		var $this = $(this);
+		var slug = $this.closest('.event').data('slug');
+		console.log('set', $this, slug);
+
+		$this.addClass('working').html(ProcesingTpl);
+		var xhr = $.post('/admin/coding/set-as-current', {slug: slug})
+		xhr.always(function(){
+			$this.removeClass('working').html(CurrentTpl);
 		})
-	})
+		xhr.then(function(){
+			$this.renderCurrent();
+		}, function(){
+			// deal with error
+		});			
+	});
+
+	$('.events').on('click', '.unset-as-current', function (e){
+		var $this = $(this);
+		var slug = $this.closest('.event').data('slug');
+		console.log('unset', $this, slug);
+
+		$this.addClass('working').html(ProcesingTpl);
+
+		var xhr = $.post('/admin/coding/unset-as-current', {slug: slug})
+		xhr.always(function(){
+			$this.removeClass('working').html(CurrentTpl);
+		})
+		xhr.then(function(){
+			$this.renderNotCurrent();
+		}, function(){
+			// deal with error
+		});		
+	});	
+	{% endif %}
 </script>
 {% endblock %}
