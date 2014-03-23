@@ -38,33 +38,6 @@
 						<button class="btn btn-primary">Reservar ticket</button>
 						</form>
 					{% endif %}
-
-
-
-					{% if talkSend %}
-						<h4>Gracias por enviar tu platica, <a href="http://twitter.com/siedrix">@siedrix</a> te contactará pronto.</h4>
-					{% endif %}
-
-					{% if talkEdit %}
-						<h4>La platica modificada.</h4>
-					{% endif %}
-
-
-					{% if talk %}
-					<form class="call-for-proposals" action="/eventos/{{event.slug}}/talks/{{talk.id}}/edit" method="POST">
-						<h4>Tu platica sugeria para el evento.</h4>
-					{% else %}
-					<form class="call-for-proposals" action="/eventos/{{event.slug}}/call-for-proposals" method="POST">
-						<h4>Quiero dar una plática.</h4>
-					{% endif %}
-						<p>Yo {{user.username}} quiero dar una plática acerca de <input name="title" type="text" value="{{talk.title}}"/></p>
-						<p>Description de tu platica:</p>
-						<p><textarea name="description">{{talk.description}}</textarea></p>
-						<p>Cuéntanos un poco de tu experiencia con esta libreria/tecnología</p>
-						<p><textarea name="experience">{{talk.experience}}</textarea></p>
-						<p class="right"><button class="btn btn-default">Enviar propuesta</button></p>
-					</form>
-
 				{% else %}
 					<h4>Haz log in para hacer obtener tu boleto</h4>
 					<a href="/auth/github" class="btn btn-primary">Hacer check in</a>

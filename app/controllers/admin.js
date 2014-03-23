@@ -7,7 +7,6 @@ _.str = require('underscore.string');
 
 var Users = require('../collections/users'),
 	Events = require('../collections/events'),
-	Talks = require('../collections/talks'),
 	Tickets = require('../collections/tickets');
 
 var adminController = controller({
@@ -15,13 +14,6 @@ var adminController = controller({
 });
 
 adminController.beforeEach(function(req, res, next){
-	res.data.breadcrumbs = {
-		'/': 'Home',
-		'/admin/': 'Admin',
-		'/admin/users': 'Users',
-		'/admin/events': 'Events',
-		'/admin/talks': 'Talks'
-	};
 	// Validates that user is an admin in the conf file
 	if(req.session &&
 	req.session.passport &&
@@ -83,7 +75,6 @@ adminController.post('/events/new', function (req, res) {
 	}).catch(function(err){
 		res.send(500, err);
 	});
-
 });
 
 adminController.get('/events/edit/:slug', function (req, res) {
@@ -143,7 +134,6 @@ adminController.post('/events/edit/:slug', function (req, res) {
 	}).catch(function(err){
 		res.send(500, err);
 	});
-
 });
 
 adminController.post('/events/set-as-current', function(req, res) {
@@ -189,17 +179,6 @@ adminController.post('/events/set-as-current', function(req, res) {
 	}).catch(function(err) {
 		var status = err.status || 500;
 		res.send(status, err);
-	});
-});
-
-adminController.get('/talks', function (req, res) {
-	var talks = new Talks();
-	talks.fetch().then(function(){
-		res.render('admin/talks',{
-			talks : talks.toJSON()
-		});
-	}).catch(function(err) {
-		res.send(err.status || 500, err);
 	});
 });
 
