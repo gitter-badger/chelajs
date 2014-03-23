@@ -185,7 +185,8 @@ eventsController.get('/:slug', function (req, res) {
 	var events  = new Events();
 
 	events.fetchOne(function(item){
-		return item.slug === req.params.slug;
+		return item.slug === req.params.slug &&
+			item.type === Events.Types.MEETUP;
 	}).then(function(event){
 		if(!event){ return res.send(404, 'Event not found');}
 
