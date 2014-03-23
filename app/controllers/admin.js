@@ -67,7 +67,7 @@ adminController.post('/events/new', function (req, res) {
 		if(events.length > 0){return res.send('Error: Event already exist');}
 
 		req.body.slug = slug;
-		req.body.type = Events.Type.MEETUP;
+		req.body.type = Events.Types.MEETUP;
 		vent = events.add(req.body);
 
 		return vent.save();
