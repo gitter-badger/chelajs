@@ -17,7 +17,8 @@ homeController.beforeEach(function(req, res, next){
 // Server routes
 homeController.get('', function (req, res) {
 	var q = Events.findOne(function(event){
-		return event.current === true;
+		return event.current === true &&
+			event.type === Events.Types.MEETUP;
 	});
 
 	q.then(function(event){
@@ -32,6 +33,8 @@ homeController.get('', function (req, res) {
 			user  : req.session.passport.user,
 			event : eventData
 		});
+	}).catch(function(err){
+		res.send(500, err);
 	});
 });
 
