@@ -21,6 +21,8 @@ server.set('view cache', false);
 
 server.use(express.static('./public'));
 
+server.use('/vendor', express.static(__dirname + '/bower_components'));
+
 if (process.env.NODE_ENV === 'production') {
 	server.use(express.logger());
 }else{

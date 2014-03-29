@@ -5,3 +5,4 @@ config
 npm-debug.log
 .DS_Store
 backup.zip
+bower_components
