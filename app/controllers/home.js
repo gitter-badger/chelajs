@@ -37,9 +37,6 @@ homeController.get('', function (req, res) {
 			eventData.date = moment( event.get('date') ).lang('es').format('MMMM DD');
 		}
 
-		console.log('sessions', sessions.toJSON() );
-
-		// res.send({
 		res.render('home',{
 			user  : req.session.passport.user,
 			event : eventData,
