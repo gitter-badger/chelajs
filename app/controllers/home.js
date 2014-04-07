@@ -1,6 +1,7 @@
 var controller = require('stackers'),
-	config = require('../../conf'),
-	moment = require('moment');
+	config     = require('../../conf'),
+	Promise    = require('bluebird'),
+	moment     = require('moment');
 
 var Events = require('../collections/events');
 
@@ -16,22 +17,33 @@ homeController.beforeEach(function(req, res, next){
 
 // Server routes
 homeController.get('', function (req, res) {
-	var q = Events.findOne(function(event){
+	var qEvents = Events.findOne(function(event){
 		return event.current === true &&
 			event.type === Events.Types.MEETUP;
 	});
 
-	q.then(function(event){
-		var eventData;
+	var qSessions = Events.find(function(event){
+		return event.current === true &&
+			event.type === Events.Types.CODING;
+	});
 
+	Promise.all([qEvents, qSessions]).then(function(results) {
+		var event = results[0];
+		var sessions = results[1];
+
+		var eventData;
 		if(event){
 			eventData = event.toJSON();
 			eventData.date = moment( event.get('date') ).lang('es').format('MMMM DD');
 		}
 
+		console.log('sessions', sessions.toJSON() );
+
+		// res.send({
 		res.render('home',{
 			user  : req.session.passport.user,
-			event : eventData
+			event : eventData,
+			sessions : sessions.toJSON()
 		});
 	}).catch(function(err){
 		res.send(500, err);

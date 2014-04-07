@@ -136,7 +136,7 @@ var renderFinished = function(event, req, res){
 
 	qTickets.then(function(){
 		var userTicket, userUsedTicket;
-		if(req.session.passport.user && req.session.passport.user.username){
+		if(req.session.passport && req.session.passport.user && req.session.passport.user.username){
 			userTicket = tickets.find(function(item){
 				return item.get('user') === req.session.passport.user.username;
 			});
@@ -147,8 +147,10 @@ var renderFinished = function(event, req, res){
 		}
 
 		if( userTicket ){ data.hasTicket = true;}
-		if( userUsedTicket ){ data.hasUsedTicket = true; }
-		data.currentTicket = userUsedTicket.toJSON();
+		if( userUsedTicket ){
+			data.hasUsedTicket = true;
+			data.currentTicket = userUsedTicket.toJSON();
+		}
 
 		// Populate avatar
 		return users.fetchFilter(function(user){
@@ -172,8 +174,6 @@ var renderFinished = function(event, req, res){
 		}).map(function(item){
 			return item.toJSON();
 		});
-
-		console.log(data);
 
 		res.render('events/finished',data);
 	}).catch(function(err){
