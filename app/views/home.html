@@ -11,16 +11,18 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-md-8">
-					<h1>ChelaJs</h1>
-					<p>Un grupo developers se reúnen a tomar javascript con el pretexto de hablar del mejor lenguaje hoy en día: cerveza.</p>
+					<h1><img src="/img/logo.png" alt="Chela JS"></h1>
 				</div>
 				<div class="col-md-4 next-event">
+					<p>Un grupo developers se reúnen a tomar javascript con el pretexto de hablar del mejor lenguaje hoy en día: cerveza.</p>
+
 					{% if event %}
 						{% if event.status == 'active' %}
-							<h2>{{event.name}}</h2>
-							<div>Fecha del evento: <b>{{event.date}}</b></div>
-							<div>{{event.except}}</div>
-							<div>Consigue tu boleto <a href="/eventos/{{event.slug}}">aqui</a></div>
+							<h2>Próximo evento</h2>
+							<h3>{{event.name}}</h3>
+							<div>{{event.date}}</div>
+							<div>{{event.place}} - {{event.address}}</div>
+							<a href="/eventos/{{event.slug}}" class="btn btn-primary btn-lg">Consigue tu boleto</a>
 						{% elseif event.status == 'ongoing' %}
 							<h2>{{event.name}}</h2>
 							<div><b>Esta sucediendo en este momento</b></div>
@@ -47,27 +49,16 @@
 	<div class="main">
 		<div class="container">
 			<div class="row">
-				<h2>Colabora con Chelajs</h2>
-				<p>Chelajs necesita tu ayuda para crecer y ser una gran comunidad</p>
+				<h2>Con el apoyo de</h2>
 			</div>
 			<div class="row">
-				<div class="col-md-4">
-					<h4>Ayuda a organizar el evento</h4>
-					<p>Se voluntario durante un evento.<p> 
-					<p>Para que un evento suceda necesario preparar muchas cosas, coordinar las platicas y difundir el evento.</p>
-					<p>Si deseas ser parte del staff de Chelajs y ayudar a que el evento suceda todos los meses. Para esto necesitamos tantas manos como sea posible.</p>
+				<div class="col-md-6">
+					<a href="http://centraal.com">
+						<img src="/img/logos-centraal.png"  style="max-width: 50%">
+					</a>
 				</div>
-				<div class="col-md-4">
-					<h4>Colabora a mejorar este sitio</h4>
-					<p>Tenemos planes para que este sitio sea el hub de la comunidad.</p>
-					<p>Poco a poco agregaremos a este sitio la opcion de compartir link, proyectos, perfiles, ofertas de trabajo y muchas cosas mas.</p>
-					<p>Necesitamos gente que colabore con diseno, programacion y todas esas cosas que requiere un sitio web.</p>
-				</div>
-				<div class="col-md-4">
-					<h4>Patrocina el evento</h4>
-					<p>Para por organizar un evento necesitamos conseguir un lugar donde realizarlo y cerveza. Ayudanos a que esto suceda.</p>
-					<p>Haz un patrocinio en cerveza, en forma de un lugar o en efectivo.</p>
-					</p>Colabora con la comunidad y haz que esta conozca tu empresa y que es lo que esta realizando.</p>		
+				<div class="col-md-6">
+					<img src="/img/logos-google-dev.png" style="max-width: 100%">
 				</div>
 			</div>
 			<div class="row">

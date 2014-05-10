@@ -1,12 +1,19 @@
 navbarText = white
+beerJsBlue = #b2d1e7
+chelaFont = 'Source Sans Pro', sans-serif
 
 body
 	text-align justify
 	padding 60px 0 20px 0
+	background darken(beerJsBlue, 20%)
+	font-family: chelaFont
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6
+	font-family: chelaFont
 
 .navbar
+	background: beerJsBlue
 	.navbar-brand
-		color navbarText
 
 	.navbar-text
 		color navbarText
@@ -20,8 +27,10 @@ body
 
 .jumbotron
 	padding-top 54px
+	background: transparent
+	font-weight: normal
 	p
-		width: 25em
+		max-width 25em
 
 	.next-event
 		> div
@@ -30,6 +39,7 @@ body
 
 .main
 	padding-bottom 48px
+	background white
 
 .right
 	text-align right
