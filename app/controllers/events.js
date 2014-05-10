@@ -1,5 +1,6 @@
 var controller = require('stackers'),
 	_          = require('underscore'),
+	moment     = require('moment'),
 	Promise    = require('bluebird'),
 	config     = require('../../conf');
 
@@ -20,10 +21,24 @@ eventsController.beforeEach(function(req, res, next){
 });
 
 var renderActive = function(event, req, res){
+	//hardcodeando el idioma
+	moment.lang('es');
 	/*jshint camelcase:false */
 	var tickets = new Tickets();
 	var users   = new Users();
 
+	//TODO: esto realmente va en el modelo
+	var placeUrls = {
+		centraal: 'https://www.google.com/maps/place/Centraal/@19.412084,-99.' +
+		'180576,17z/data=!3m1!4b1!4m2!3m1!1s0x85d1ff5c96fc9085:0x2f6aec40a6a0a8b0'
+	};
+
+	var dateTime = moment(event.get('date') + ' ' + event.get('hour_start'));
+	event.set('date_start', dateTime);
+	var place = event.get('place').toLowerCase();
+	if (placeUrls[place]) {
+		event.set('embed', placeUrls[place]);
+	}
 	var data = {
 		event : event.toJSON(),
 		user : req.session.passport.user
