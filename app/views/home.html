@@ -10,16 +10,17 @@
 	<div class="jumbotron">
 		<div class="container">
 			<div class="row">
-				<div class="col-md-8">
+				<div class="col-md-6 logo">
 					<h1><img src="/img/logo.png" alt="Chela JS"></h1>
 				</div>
-				<div class="col-md-4 next-event">
+				<div class="col-md-6 next-event">
+					<h1>ChelaJs</h1>
 					<p>Un grupo developers se reúnen a tomar javascript con el pretexto de hablar del mejor lenguaje hoy en día: cerveza.</p>
 
+					<div class="event-info">
 					{% if event %}
 						{% if event.status == 'active' %}
-							<h2>Próximo evento</h2>
-							<h3>{{event.name}}</h3>
+							<h3>Próximo evento: {{event.name}}</h3>
 							<div>{{event.date}}</div>
 							<div>{{event.place}} - {{event.address}}</div>
 							<a href="/eventos/{{event.slug}}" class="btn btn-primary btn-lg">Consigue tu boleto</a>
@@ -42,6 +43,7 @@
 						<h2>No Siguiente evento</h2>
 						<div>Si tienes un lugar y quieres colaborar con ChelaJs contacta a <a href="https://twitter.com/siedrix">@Siedrix</a> y ayudanos a que sucede al siguiente.</div>
 					{% endif %}
+					</div>
 				</div>
 			</div>
 		</div>
