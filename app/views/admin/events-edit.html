@@ -117,18 +117,24 @@
 			<h3>Attendees</h3>
 			<div class="row list">
 				<div class="col-xs-3"><h4>Nombre</h4></div>
-				<div class="col-xs-3"><h4>User</h4></div>
-				<div class="col-xs-4"><h4>Email</h4></div>
+				<div class="col-xs-4"><h4>User</h4></div>
+				<div class="col-xs-3"><h4>Email</h4></div>
 				<div class="col-xs-2"><h4>Used</h4></div>
+				<!-- <div class="col-xs-2"><h4>Newsletter</h4></div> -->
 			</div>
+			{% for ticket in tickets %}
 			<div class="row list">
-				{% for ticket in tickets %}
 				<div class="col-xs-3"><span>{{ ticket.displayName }}</span></div>
-				<div class="col-xs-3"><span>{{ ticket.user }}</span></div>
-				<div class="col-xs-4"><span>{{ ticket.email }}</span></div>
-				<div class="col-xs-2"><span>{{ ticket.used }}</span></div>
-				{% endfor %}
+				<div class="col-xs-4"><span><a target="_blank" href="/admin/user/{{ ticket.user }}">{{ ticket.user }}</a></span></div>
+				<div class="col-xs-3"><span>{{ ticket.email }}</span></div>
+				<div class="col-xs-2"><span>
+				{% if !ticket.used %}
+					<button class="btn btn-primary btn-check-in btn-xs" data-user="{{ ticket.user }}" data-event="{{ event.slug }}">Check-in</button>
+				{% endif %}
+				</span></div>
+				<!-- <div class="col-xs-2"><input type="checkbox"/></div> -->
 			</div>
+			{% endfor %}
 			{% endif %}
 		</div>
 	</div>
@@ -159,5 +165,19 @@
         	// e doesnt exits, but this prevets the form from been send;
         	e.preventDefault();
         });
+
+		$('.btn-check-in').on('click', function(){
+			var $this = $(this);
+			var eventSlug = $this.data('event');
+			var username = $this.data('user');
+
+			$this.text('Saving...');
+
+			$.post('/admin/event/' + eventSlug + '/check-in', {user:username}, function(data){
+				$this.parent().html('Checked in');
+			}).fail(function(){
+				alert('Check in failed');
+			});
+		});
 	</script>
 {% endblock %}

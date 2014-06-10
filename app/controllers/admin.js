@@ -265,6 +265,25 @@ adminController.post('/coding/unset-as-current', function (req, res) {
 	});
 });
 
+adminController.post('/event/:slug/check-in', function (req, res) {
+	var tickets = new Tickets();
+
+	tickets.fetchOne(function(item){
+		return item.user  === req.body.user &&
+			item.event === req.params.slug;
+	}).then(function(ticket){
+		if(!ticket){return res.send(404, 'No ticket found');}
+
+		ticket.set('used', true);
+		return ticket.save();
+	}).then(function(data){
+		console.log(data);
+		res.send({success:true});
+	}).catch(function(err){
+		res.send(500, err);
+	});
+});
+
 var utilsController = require('./utils');
 
 adminController.attach(utilsController);
