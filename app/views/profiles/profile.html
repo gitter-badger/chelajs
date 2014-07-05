@@ -15,7 +15,7 @@
 					<p><a class="btn btn-primary" href="{{currentUser.profileUrl}}"><i class="fa fa-github"></i> Github</a></p>
 					{% if profileOwner %}
 						<div class="bio">
-							<form method="POST" action="/perfil/{{currentUser.username}}/update-bio">
+							<form method="POST" action="/perfil/update-bio">
 								<h4>Edita tu perfil</h4>
 								{% if updatedBio %}<p>Perfil actualizado</p>{% endif %}
 								<p><textarea name="bio">{{ currentUser.bio }}</textarea></p>

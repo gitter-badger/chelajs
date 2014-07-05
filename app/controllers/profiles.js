@@ -24,6 +24,71 @@ profileController.param('userName', function (userName, done) {
 	});
 });
 
+profileController.get('', function (req, res) {
+	if( !(req.session.passport && req.session.passport.user && req.session.passport.user.username ) ){
+		return res.send('Render log in options');
+	}
+
+	var username = req.session.passport.user.username;
+
+	var tickets = new Tickets();
+	var events = new Events();
+	var users = new Users();
+	var user;
+
+	users.fetchFilter(function (item) {
+		return  item.username === username;
+	}).then(function(data){
+		user = users.first();
+
+		return tickets.fetchFilter(function (item) {
+			return item.user === username && item.used;
+		})
+	}).then(function () {
+		var eventsAssisted = tickets.map(function (ticket) {return ticket.get('event');});
+
+		return events.fetchFilter(function (item) {return eventsAssisted.indexOf(item.slug) >= 0; });
+	}).then(function () {
+		var updatedBio = req.query['update-bio'] ? true : false;
+		var bioAsHtml  = marked(user.get('bio') || '');
+
+		res.render('profiles/profile', {
+			user         : req.session.passport.user,
+			currentUser  : user.toJSON(),
+			events       : events.toJSON(),
+			profileOwner : true,
+			updatedBio   : updatedBio,
+			bioAsHtml    : bioAsHtml
+		});
+	}).catch(function (err) {
+		res.send(500, err);
+	});	
+});
+
+profileController.post('/update-bio', function (req, res) {
+
+	if( !(req.session.passport && req.session.passport.user && req.session.passport.user.username) ){
+		return res.sendError(403, 'forbiden');
+	}
+
+	var username = req.session.passport.user.username;
+	var user;
+	var users = new Users();
+
+	users.fetchFilter(function (item) {
+		return  item.username === username;
+	}).then(function(){
+		var user = users.first();
+		user.set('bio', req.body.bio);
+		
+		return user.save()
+	}).then(function () {
+		res.redirect( 'perfil/?update-bio=true' );
+	}).catch(function (err) {
+		res.sendError(500, err);
+	});
+});
+
 profileController.get('/:userName', function (req, res) {
 	if(_.isEmpty(res.data.userName)){return res.sendError(404, 'user not found');}
 
@@ -48,6 +113,7 @@ profileController.get('/:userName', function (req, res) {
 		var bioAsHtml  = marked(user.get('bio') || '');
 
 		res.render('profiles/profile', {
+			user         : req.session.passport.user,
 			currentUser  : user.toJSON(),
 			events       : events.toJSON(),
 			profileOwner : profileOwner,
@@ -56,20 +122,6 @@ profileController.get('/:userName', function (req, res) {
 		});
 	}).catch(function (err) {
 		res.send(500, err);
-	});
-});
-
-profileController.post('/:userName/update-bio', function (req, res) {
-	var user = res.data.userName;
-
-	if( _.isEmpty(res.data.userName) ){return res.sendError(404, 'user not found');}
-	if( !(req.session.passport && req.session.passport.user && req.session.passport.user.username === user.get('username')) ){return res.sendError(403, 'forbiden');}
-
-	user.set('bio', req.body.bio);
-	user.save().then(function () {
-		res.redirect( 'perfil/' + user.get('username') + '?update-bio=true' );
-	}).catch(function (err) {
-		res.sendError(500, err);
 	});
 });
 
