@@ -22,6 +22,17 @@
 								<p class="small">Puedes usar markdown, para agregar estilo a tu bio</p>
 								<p><button class="btn btn-primary">Salvar</button></p>
 							</form>
+							{% if repos %}
+							<form method="POST" action="/perfil/update-repos">
+								<p>Selecciona tus repositorios que quieras que sean publicos.</p>
+								<ul>
+								{% for repo in repos %}
+									<li><label><input type="checkbox" name="repos[]" value="{{ repo.id }}" {% if currentUser.repos|has(repo.id) %}checked{% endif %} >{{ repo.name }}</label>  -  <a href="https://github.com/{{ repo.full_name }}" target="_blank">{{ repo.full_name }}</a></li>
+								{% endfor %}
+								</ul>
+								<p><button class="btn btn-primary">Seleccionar Repositorios</button></p>
+							</form>
+							{% endif %}
 						</div>
 					{% else %}
 						<div class="bio">{% autoescape false %}{{ bioAsHtml }}{% endautoescape %}</div>
