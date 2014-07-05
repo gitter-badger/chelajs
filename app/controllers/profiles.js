@@ -52,6 +52,13 @@ profileController.get('', function (req, res) {
 		var updatedBio = req.query['update-bio'] ? true : false;
 		var bioAsHtml  = marked(user.get('bio') || '');
 
+		var emails = user.get('emails');
+
+		if(emails.length){
+			user.set('email', emails[0].value);
+		}
+		user.set('displayName', user.get('displayName') || user.get('username') );
+
 		res.render('profiles/profile', {
 			user         : req.session.passport.user,
 			currentUser  : user.toJSON(),
@@ -62,26 +69,27 @@ profileController.get('', function (req, res) {
 		});
 	}).catch(function (err) {
 		res.send(500, err);
-	});	
+	});
 });
 
 profileController.post('/update-bio', function (req, res) {
-
 	if( !(req.session.passport && req.session.passport.user && req.session.passport.user.username) ){
 		return res.sendError(403, 'forbiden');
 	}
 
 	var username = req.session.passport.user.username;
-	var user;
 	var users = new Users();
 
 	users.fetchFilter(function (item) {
 		return  item.username === username;
 	}).then(function(){
 		var user = users.first();
+
+		user.set('displayName', req.body['display-name']);
+		user.set('email', req.body.email);
 		user.set('bio', req.body.bio);
-		
-		return user.save()
+
+		return user.save();
 	}).then(function () {
 		res.redirect( 'perfil/?update-bio=true' );
 	}).catch(function (err) {
