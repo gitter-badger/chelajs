@@ -1,6 +1,8 @@
 var controller = require('stackers'),
 	_ =  require('underscore'),
-	marked = require('marked');
+	marked = require('marked'),
+	Promise = require('bluebird'),
+	GitHubApi = require("github");
 
 var Users   = require('../collections/users');
 var Tickets = require('../collections/tickets');
@@ -34,7 +36,15 @@ profileController.get('', function (req, res) {
 	var tickets = new Tickets();
 	var events = new Events();
 	var users = new Users();
+	var repos = [];
 	var user;
+
+	var github = new GitHubApi({
+		version: "3.0.0",
+		timeout: 2000
+	});
+
+	var getReposFromUser = Promise.promisify( github.repos.getFromUser );
 
 	users.fetchFilter(function (item) {
 		return  item.username === username;
@@ -44,6 +54,18 @@ profileController.get('', function (req, res) {
 		return tickets.fetchFilter(function (item) {
 			return item.user === username && item.used;
 		})
+	}).then(function () {
+		return getReposFromUser({
+			user: user.get('username')
+		}).tap(function( res ) {
+			_.each( res, function( repo ){
+				var repos_aux = {}
+				repos_aux.id = repo.id.toString();
+				repos_aux.name = repo.name;
+				repos_aux.full_name = repo.full_name;
+				repos.push( repos_aux );
+			});
+		});
 	}).then(function () {
 		var eventsAssisted = tickets.map(function (ticket) {return ticket.get('event');});
 
@@ -65,7 +87,8 @@ profileController.get('', function (req, res) {
 			events       : events.toJSON(),
 			profileOwner : true,
 			updatedBio   : updatedBio,
-			bioAsHtml    : bioAsHtml
+			bioAsHtml    : bioAsHtml,
+			repos        : repos
 		});
 	}).catch(function (err) {
 		res.send(500, err);
@@ -90,6 +113,28 @@ profileController.post('/update-bio', function (req, res) {
 		user.set('bio', req.body.bio);
 
 		return user.save();
+	}).then(function () {
+		res.redirect( 'perfil/?update-bio=true' );
+	}).catch(function (err) {
+		res.sendError(500, err);
+	});
+});
+
+profileController.post('/update-repos', function (req, res) {
+	if( !(req.session.passport && req.session.passport.user && req.session.passport.user.username) ){
+		return res.sendError(403, 'forbiden');
+	}
+
+	var username = req.session.passport.user.username;
+	var user;
+	var users = new Users();
+
+	users.fetchFilter(function (item) {
+		return  item.username === username;
+	}).then(function(){
+		var user = users.first();
+		user.set('repos', req.body.repos);
+		return user.save()
 	}).then(function () {
 		res.redirect( 'perfil/?update-bio=true' );
 	}).catch(function (err) {
