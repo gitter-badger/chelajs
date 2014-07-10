@@ -110,6 +110,12 @@ h1 img
 		textarea
 			width 100%
 			height 150px
+		form
+			margin: 0
+			padding: 20px 0
+			border-bottom: 1px solid #ddd;
+			&:last-chilf
+				border: none
 
 .sponsor-home-container
 	text-align: center;
@@ -119,3 +125,58 @@ h1 img
 		display: table-cell;
 		vertical-align: middle;	
 
+.user_profile
+	img
+		width: 99%;
+		max-width: 250px;
+		border-radius: 50%;
+		border: 1px solid;
+	h2
+		margin: 0; padding: 0
+.user_profile_details
+	clear: both;
+
+#attended_events_list
+	list-style: none;
+	margin: 0; padding: 0
+	li
+		padding: 4px 0;
+		i
+			font-size: 18px;
+			padding: 0 5px 0 0;
+			color: #aaa;
+			position: relative;
+			top: 2px;
+		&:hover
+			i
+				color: #666;
+
+#repos_list
+	.repo_item
+		clear: both;
+		margin: 0;
+		padding: 15px 0 15px 0;
+		border-bottom: 1px solid #ddd;
+		.repo_icon
+			font-size: 42px;
+			color: #aaa;
+		.repo_info
+			h4
+				margin: 0;
+			p
+				margin: 0;
+				padding: 5px 0;
+			span
+				font-size: 13px;
+				color: #aaa;
+		&:hover
+			background-color: #fcfcfc;
+			.repo_icon
+				color: #666;
+
+#repos_list_edit
+	margin: 5px 0 20px 0;
+	padding: 0;
+	list-style: none;
+	span
+		padding: 0 5px 0 10px

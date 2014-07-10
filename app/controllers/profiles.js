@@ -2,11 +2,19 @@ var controller = require('stackers'),
 	_ =  require('underscore'),
 	marked = require('marked'),
 	Promise = require('bluebird'),
-	GitHubApi = require("github");
+	moment = require('moment'),
+	GitHubApi = require('github');
 
 var Users   = require('../collections/users');
 var Tickets = require('../collections/tickets');
 var Events  = require('../collections/events');
+
+var github = new GitHubApi({
+	version: "3.0.0",
+	timeout: 2000
+});
+
+var getReposFromUser = Promise.promisify( github.repos.getFromUser );
 
 var profileController = controller({
 	path : 'perfil'
@@ -38,13 +46,6 @@ profileController.get('', function (req, res) {
 	var users = new Users();
 	var repos = [];
 	var user;
-
-	var github = new GitHubApi({
-		version: "3.0.0",
-		timeout: 2000
-	});
-
-	var getReposFromUser = Promise.promisify( github.repos.getFromUser );
 
 	users.fetchFilter(function (item) {
 		return  item.username === username;
@@ -148,6 +149,8 @@ profileController.get('/:userName', function (req, res) {
 	var user = res.data.userName;
 	var profileOwner = false;
 
+	var repos = [];
+
 	if(req.session.passport && req.session.passport.user && req.session.passport.user.username === user.get('username')){
 		profileOwner = true;
 	}
@@ -159,8 +162,29 @@ profileController.get('/:userName', function (req, res) {
 		return item.user === user.get('username') && item.used;
 	}).then(function () {
 		var eventsAssisted = tickets.map(function (ticket) {return ticket.get('event');});
-
 		return events.fetchFilter(function (item) {return eventsAssisted.indexOf(item.slug) >= 0; });
+	}).then(function () {
+		moment.lang('es');
+		return getReposFromUser({
+			user: user.get('username')
+		}).tap(function( res ) {
+			_.each( res, function( repo ){
+				var repos_aux = {};
+				repos_aux.id = repo.id.toString();
+				repos_aux.name = repo.name;
+				repos_aux.full_name = repo.full_name;
+				repos_aux.description = repo.description;
+				repos_aux.fork = repo.fork;
+				repos_aux.last_update = repo.updated_at; 
+				repos_aux.last_update_from_now = moment( repo.updated_at, "YYYY-MM-DDTHH:mm:ss").fromNow();
+				if( _.indexOf( user.get('repos'), repos_aux.id) >= 0 ){
+					repos.push( repos_aux );
+				}
+			});
+			repos.sort(function(a,b){
+				return new Date(b.last_update) - new Date(a.last_update);
+			});
+		});
 	}).then(function () {
 		var updatedBio = req.query['update-bio'] ? true : false;
 		var bioAsHtml  = marked(user.get('bio') || '');
@@ -171,7 +195,8 @@ profileController.get('/:userName', function (req, res) {
 			events       : events.toJSON(),
 			profileOwner : profileOwner,
 			updatedBio   : updatedBio,
-			bioAsHtml    : bioAsHtml
+			bioAsHtml    : bioAsHtml,
+			repos        : repos
 		});
 	}).catch(function (err) {
 		res.send(500, err);
