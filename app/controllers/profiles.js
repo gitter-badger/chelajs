@@ -3,15 +3,23 @@ var controller = require('stackers'),
 	marked = require('marked'),
 	Promise = require('bluebird'),
 	moment = require('moment'),
+	config = require('../../conf'),
 	GitHubApi = require('github');
 
 var Users   = require('../collections/users');
 var Tickets = require('../collections/tickets');
 var Events  = require('../collections/events');
 
+var github_key = config.github || {};
 var github = new GitHubApi({
 	version: "3.0.0",
 	timeout: 2000
+});
+
+github.authenticate({
+    type: "oauth",
+    key: github_key.clientID,
+    secret: github_key.clientSecret
 });
 
 var getReposFromUser = Promise.promisify( github.repos.getFromUser );
@@ -24,7 +32,7 @@ profileController.param('userName', function (userName, done) {
 	var users = new Users();
 
 	var q = users.fetchOne(function (item) {
-		return  item.username === userName;
+		return  item.username.toLowerCase() === userName.toLowerCase();
 	});
 
 	q.then(function (user) {
