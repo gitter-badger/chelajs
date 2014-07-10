@@ -54,4 +54,4 @@ For help with styles, stylus + nib
 
 Then run
 
-	stylus -u nib -w -c -o css/ stylus/*.styl
+	stylus -u nib -w -c -o public/css/ public/stylus/*.styl
