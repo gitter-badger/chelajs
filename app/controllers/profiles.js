@@ -158,11 +158,6 @@ profileController.get('/:userName', function (req, res) {
 	var profileOwner = false;
 
 	var repos = [];
-
-	if(req.session.passport && req.session.passport.user && req.session.passport.user.username === user.get('username')){
-		profileOwner = true;
-	}
-
 	var tickets = new Tickets();
 	var events = new Events();
 
