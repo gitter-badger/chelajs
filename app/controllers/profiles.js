@@ -216,7 +216,7 @@ profileController.post('/subscribe', function(req,res){
 					email:user.get('email'),// User email
 				},
 				merge_vars:{
-					name:user.get('displayName')
+					name:user.get('displayName') || user.get('username')
 				},
 				send_welcome: true,
 				double_optin: true,
@@ -244,7 +244,6 @@ profileController.post('/subscribe', function(req,res){
 		res.sendError(500, err);
 	});
 });
-
 
 profileController.post('/unsubscribe', function(req,res){
 	if( !(req.session.passport && req.session.passport.user && req.session.passport.user.username) ){
