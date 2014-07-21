@@ -17,4 +17,14 @@ webHooksController.get('/mailchimp', function (req, res) {
 	}
 });
 
+webHooksController.post('/mailchimp', function (req, res) {
+	if(req.query.key === config.mailchimp.webhookKey){
+		mailCollection.fetch();
+
+		res.send(200, {success:true});
+	}else{
+		res.send(403);
+	}
+});
+
 module.exports = webHooksController;
