@@ -56,6 +56,10 @@ server.get('/log-out', function (req, res) {
 	res.redirect('/');
 });
 
+// Collactions
+var MailCollection = require('./app/collections/mailchimp');
+MailCollection.fetch();
+
 // Connections
 var githubConnection = require('./app/connections/github');
 githubConnection(server);
@@ -65,12 +69,14 @@ var homeController = require('./app/controllers/home');
 var adminController = require('./app/controllers/admin');
 var eventsController = require('./app/controllers/events');
 var profilesController = require('./app/controllers/profiles');
+var webhooksController = require('./app/controllers/webhooks');
 
 homeController(server);
 adminController(server);
 eventsController(server);
 profilesController(server);
+webhooksController(server);
 
-server.listen(3000);
+server.listen(4000);
 console.log('Server booted at', new Date() );
 

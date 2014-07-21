@@ -3,12 +3,14 @@ var controller = require('stackers'),
 	marked = require('marked'),
 	Promise = require('bluebird'),
 	moment = require('moment'),
+	mailchimp = require('lib/mailchimp'),
 	config = require('../../conf'),
 	GitHubApi = require('github');
 
 var Users   = require('../collections/users');
 var Tickets = require('../collections/tickets');
 var Events  = require('../collections/events');
+var Newsletter = require('../collections/mailchimp')
 
 var github_key = config.github || {};
 var github = new GitHubApi({
@@ -81,14 +83,17 @@ profileController.get('', function (req, res) {
 		return events.fetchFilter(function (item) {return eventsAssisted.indexOf(item.slug) >= 0; });
 	}).then(function () {
 		var updatedBio = req.query['update-bio'] ? true : false;
+		var subscribe  = req.query.subscribe ? true : false;
+
 		var bioAsHtml  = marked(user.get('bio') || '');
 
 		var emails = user.get('emails');
 
-		if(emails.length){
+		if( !(user.get('email') !== null || user.get('email') !== undefined) && emails.length){
 			user.set('email', emails[0].value);
 		}
 		user.set('displayName', user.get('displayName') || user.get('username') );
+		console.log('isSubcribed?', Newsletter.hasByEuid( user.get('euid') ) );
 
 		res.render('profiles/profile', {
 			user         : req.session.passport.user,
@@ -96,58 +101,13 @@ profileController.get('', function (req, res) {
 			events       : events.toJSON(),
 			profileOwner : true,
 			updatedBio   : updatedBio,
+			isSubscribed : Newsletter.hasByEuid( user.get('euid') ),
+			subscribe    : subscribe,
 			bioAsHtml    : bioAsHtml,
 			repos        : repos
 		});
 	}).catch(function (err) {
 		res.send(500, err);
-	});
-});
-
-profileController.post('/update-bio', function (req, res) {
-	if( !(req.session.passport && req.session.passport.user && req.session.passport.user.username) ){
-		return res.sendError(403, 'forbiden');
-	}
-
-	var username = req.session.passport.user.username;
-	var users = new Users();
-
-	users.fetchFilter(function (item) {
-		return  item.username === username;
-	}).then(function(){
-		var user = users.first();
-
-		user.set('displayName', req.body['display-name']);
-		user.set('email', req.body.email);
-		user.set('bio', req.body.bio);
-
-		return user.save();
-	}).then(function () {
-		res.redirect( 'perfil/?update-bio=true' );
-	}).catch(function (err) {
-		res.sendError(500, err);
-	});
-});
-
-profileController.post('/update-repos', function (req, res) {
-	if( !(req.session.passport && req.session.passport.user && req.session.passport.user.username) ){
-		return res.sendError(403, 'forbiden');
-	}
-
-	var username = req.session.passport.user.username;
-	var user;
-	var users = new Users();
-
-	users.fetchFilter(function (item) {
-		return  item.username === username;
-	}).then(function(){
-		var user = users.first();
-		user.set('repos', req.body.repos);
-		return user.save()
-	}).then(function () {
-		res.redirect( 'perfil/?update-bio=true' );
-	}).catch(function (err) {
-		res.sendError(500, err);
 	});
 });
 
@@ -203,6 +163,155 @@ profileController.get('/:userName', function (req, res) {
 		});
 	}).catch(function (err) {
 		res.send(500, err);
+	});
+});
+
+profileController.post('/update-bio', function (req, res) {
+	if( !(req.session.passport && req.session.passport.user && req.session.passport.user.username) ){
+		return res.sendError(403, 'forbiden');
+	}
+
+	var username = req.session.passport.user.username;
+	var users = new Users();
+
+	users.fetchFilter(function (item) {
+		return  item.username === username;
+	}).then(function(){
+		var user = users.first();
+
+		user.set('displayName', req.body['display-name']);
+		user.set('email', req.body.email);
+		user.set('bio', req.body.bio);
+
+		return user.save();
+	}).then(function () {
+		res.redirect( 'perfil/?update-bio=true' );
+	}).catch(function (err) {
+		res.sendError(500, err);
+	});
+});
+
+profileController.post('/subscribe', function(req,res){
+	if( !(req.session.passport && req.session.passport.user && req.session.passport.user.username) ){
+		return res.sendError(403, 'forbiden');
+	}
+
+	var username = req.session.passport.user.username;
+	var user;
+	var users = new Users();
+
+	users.fetchFilter(function (item) {
+		return  item.username === username;
+	}).then(function(){
+		user = users.first();
+
+		if(!user){
+			return false;
+		}
+
+		return new Promise(function (resolve, reject) {
+			mailchimp.lists.subscribe({
+				id: config.mailchimp.listId, // List 
+				email:{
+					email:user.get('email'),// User email
+				},
+				merge_vars:{
+					name:user.get('displayName')
+				},
+				send_welcome: true,
+				double_optin: true,
+				update_existing: true
+			},
+			function(data) {
+				console.log('sucess', data);
+				resolve(data);
+			},
+			function(err) {
+				console.log('error', err);
+				reject(err);
+			});
+		});
+	}).then(function (data) {
+		if(!data.euid){
+			return false;
+		}
+
+		user.set('euid', data.euid);
+		return user.save();
+	}).then(function () {
+		res.redirect( 'perfil/?subscribe=true' );
+	}).catch(function (err) {
+		res.sendError(500, err);
+	});
+});
+
+
+profileController.post('/unsubscribe', function(req,res){
+	if( !(req.session.passport && req.session.passport.user && req.session.passport.user.username) ){
+		return res.sendError(403, 'forbiden');
+	}
+
+	var username = req.session.passport.user.username;
+	var user;
+	var users = new Users();
+
+	users.fetchFilter(function (item) {
+		return  item.username === username;
+	}).then(function(){
+		user = users.first();
+
+		if(!user){
+			return false;
+		}
+
+		return new Promise(function (resolve, reject) {
+			mailchimp.lists.unsubscribe({
+				id: config.mailchimp.listId, // List 
+				email:{
+					euid:user.get('euid'),// User email
+				}
+			},
+			function(data) {
+				console.log('sucess', data);
+				resolve(data);
+			},
+			function(err) {
+				console.log('error', err);
+				reject(err);
+			});
+		});
+	}).then(function (data) {
+		if(!data.euid){
+			return false;
+		}
+
+		user.set('euid', data.euid);
+		return user.save();
+	}).then(function () {
+		res.redirect( 'perfil/?unsubscribe=true' );
+	}).catch(function (err) {
+		res.sendError(500, err);
+	});
+});
+
+profileController.post('/update-repos', function (req, res) {
+	if( !(req.session.passport && req.session.passport.user && req.session.passport.user.username) ){
+		return res.sendError(403, 'forbiden');
+	}
+
+	var username = req.session.passport.user.username;
+	var users = new Users();
+
+	users.fetchFilter(function (item) {
+		return  item.username === username;
+	}).then(function(){
+		var user = users.first();
+		user.set('repos', req.body.repos);
+		return user.save();
+	}).then(function () {
+		res.redirect( 'perfil/?update-bio=true' );
+	}).catch(function (err) {
+		res.sendError(500, err);
 	});
 });
 

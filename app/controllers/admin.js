@@ -6,6 +6,7 @@ var controller = require('stackers'),
 _.str = require('underscore.string');
 
 var Users = require('../collections/users'),
+	MailCollection = require('../collections/mailchimp'),
 	Events = require('../collections/events'),
 	Tickets = require('../collections/tickets');
 
@@ -38,6 +39,11 @@ adminController.get('/users', function (req, res) {
 		});
 	});
 });
+
+adminController.get('/newsletter', function (req, res) {
+	res.send(MailCollection.toJSON());
+});
+
 
 var eventList = function(eventType){
 	return function (req, res) {
