@@ -15,4 +15,12 @@ if( process.env.NODE_ENV === 'production' ){
 	enviroment.env = 'development';
 }
 
+// Siedrix test info
+// This email list is just for test
+enviroment.mailchimp = enviroment.mailchimp || {
+	apiKey : '103864b5d07a9a1e404762ade4b0fefb-us8',
+	listId : 'e2d19ce768',
+	webhookKey : 'hi'
+};
+
 module.exports = enviroment;
