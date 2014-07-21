@@ -77,6 +77,6 @@ eventsController(server);
 profilesController(server);
 webhooksController(server);
 
-server.listen(4000);
+server.listen(3000);
 console.log('Server booted at', new Date() );
 
