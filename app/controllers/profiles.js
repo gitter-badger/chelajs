@@ -82,8 +82,9 @@ profileController.get('', function (req, res) {
 
 		return events.fetchFilter(function (item) {return eventsAssisted.indexOf(item.slug) >= 0; });
 	}).then(function () {
-		var updatedBio = req.query['update-bio'] ? true : false;
-		var subscribe  = req.query.subscribe ? true : false;
+		var updatedBio   = req.query['update-bio'] ? true : false;
+		var subscribe    = req.query.subscribe ? true : false;
+		var unsubscribe  = req.query.unsubscribe ? true : false;
 
 		var bioAsHtml  = marked(user.get('bio') || '');
 
@@ -103,6 +104,7 @@ profileController.get('', function (req, res) {
 			updatedBio   : updatedBio,
 			isSubscribed : Newsletter.hasByEuid( user.get('euid') ),
 			subscribe    : subscribe,
+			unsubscribe  : unsubscribe,
 			bioAsHtml    : bioAsHtml,
 			repos        : repos
 		});

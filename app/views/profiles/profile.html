@@ -74,7 +74,10 @@
 				<div class="col-md-5">
 					{% if profileOwner %}
 					<h3>Newsletter</h3>
-						{% if isSubscribed %}
+						{% if unsubscribe %}
+							<p>Ya no estas subscrito ;(.</p>
+							<p>Si tienes alguna queja sobre el uso del newsletter, contacta <a href="http://twitter.com/siedrix">@siedrix.</a> o a <a href="http://twitter.com/jeduan">@jeduan.</a></p>
+						{% elseif isSubscribed %}
 							<p>Estas subscrito al newsletter.</p>
 							<form method="POST" action="/perfil/unsubscribe">
 								<p><button class="btn btn-primary">Deseo dejar de resibir el newsletter</button></p>
