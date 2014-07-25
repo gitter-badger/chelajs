@@ -40,6 +40,7 @@ homeController.get('', function (req, res) {
 		res.render('home',{
 			user  : req.session.passport.user,
 			event : eventData,
+			home  : true,
 			sessions : sessions.toJSON()
 		});
 	}).catch(function(err){
