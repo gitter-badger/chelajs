@@ -24,7 +24,11 @@
 		ga('send', 'pageview');
 	</script>
 </head>
+{% if home %}
+<body class="home">
+{% else %}
 <body>
+{% endif %}
 	<div class="navbar navbar-fixed-top" role="navigation">
 		<div class="container">
 			<div class="navbar-header">
