@@ -24,6 +24,28 @@
 					{% endautoescape %}
 				</div>
 				<div class="col-md-5">
+					{% if user %}
+						{% if hasTicket %}
+							<h4>Ya tienes tu boleto, nos vemos en el evento</h4>
+							{% if ! userTicket.hasNewsletter %}
+								{% if ! userTicket.email %}
+									<p><a href="/perfil">Completa tu perfil y subscribete a nuestro newsletter</a></p>
+								{% else %}
+									<form method="POST" action="/perfil/subscribe">
+										<p><button class="btn btn-primary">Subscribirme al newsletter con {{userTicket.email}}</button></p>
+									</form>
+									<p><a href="/perfil">Cambia el mail con el que deseas recibir el newsletter</a></p>
+								{% endif %}
+							{% endif %}
+						{% elseif user %}
+							<h4>Consigue tu boleto</h4>
+							<form method="POST" action ="/eventos/{{event.slug}}/ticket">
+							<button class="btn btn-primary">Reservar ticket</button>
+							</form>
+						{% endif %}
+					{% else %}
+						<a href="/auth/github" class="btn btn-primary">Obtener Boletos</a>
+					{% endif %}
 					<h4>Asistentes({{attendees.length}})</h4>
 					<div class="avatar-wall row">
 					{% for attendee in attendees %}
@@ -31,20 +53,7 @@
 							{% include "../partials/avatar.html" with attendee %}
 						</div>
 					{% endfor %}
-					</div>
-
-				{% if user %}
-					{% if hasTicket %}
-						<h4>Ya tienes tu boleto, nos vemos en el evento</h4>
-					{% elseif user %}
-						<h4>Consigue tu boleto</h4>
-						<form method="POST" action ="/eventos/{{event.slug}}/ticket">
-						<button class="btn btn-primary">Reservar ticket</button>
-						</form>
-					{% endif %}
-				{% else %}
-					<a href="/auth/github" class="btn btn-primary">Obtener Boletos</a>
-				{% endif %}
+					</div>				
 				</div>
 			</div>
 		</div>

@@ -8,6 +8,7 @@ _.str = require('underscore.string');
 
 var Events  = require('../collections/events'),
 	Tickets = require('../collections/tickets'),
+	MailCollection = require('../collections/mailchimp'),
 	Users   = require('../collections/users');
 
 var eventsController = controller({
@@ -44,12 +45,13 @@ var renderActive = function(event, req, res){
 		user : req.session.passport.user
 	};
 
+	var userTicket;
+
 	var qTickets = tickets.fetchFilter(function(item) {
 		return item.event === event.get('slug');
 	});
 
 	qTickets.then(function(){
-		var userTicket;
 		if(req.session.passport.user && req.session.passport.user.username){
 			userTicket = tickets.find(function(item){
 				return item.get('user') === req.session.passport.user.username;
@@ -67,9 +69,24 @@ var renderActive = function(event, req, res){
 			if(avatarTicket){
 				avatarTicket.set('avatar', user.data.avatar_url);
 			}
+
+			if(userTicket && userTicket.get('user') === user.username){
+				if( MailCollection.findWhere({euid:user.euid}) ){
+					userTicket.set('hasNewsletter', true);
+				}
+
+				var emails = user.emails;
+
+				if(user.email){
+					userTicket.set('email', user.email);
+				} else if( !(user.email !== null || user.email !== undefined) && emails.length){
+					userTicket.set('email', emails[0].value);
+				}
+			}
 		});
 	}).then(function(){
 		data.attendees = tickets.toJSON();
+		data.userTicket = userTicket.toJSON();
 
 		res.render('events/active',data);
 	}).catch(function(err){
