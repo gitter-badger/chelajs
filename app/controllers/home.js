@@ -34,8 +34,12 @@ homeController.get('', function (req, res) {
 		var eventData;
 		if(event){
 			eventData = event.toJSON();
-			eventData.date = moment( event.get('date') ).lang('es').format('MMMM DD');
+			eventData.date = moment( event.get('date') ).lang('es').format('MMMM DD - hh:mm a');
 		}
+
+		sessions.forEach(function(session){
+			session.set('time', moment( event.get('date') + ' ' + event.get('hour_start') ).lang('es').format('MMMM DD - hh:mm a') );
+		});
 
 		res.render('home',{
 			user  : req.session.passport.user,
