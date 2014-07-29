@@ -94,7 +94,6 @@ profileController.get('', function (req, res) {
 			user.set('email', emails[0].value);
 		}
 		user.set('displayName', user.get('displayName') || user.get('username') );
-		console.log('isSubcribed?', Newsletter.hasByEuid( user.get('euid') ) );
 
 		res.render('profiles/profile', {
 			user         : req.session.passport.user,
@@ -225,7 +224,6 @@ profileController.post('/subscribe', function(req,res){
 				update_existing: true
 			},
 			function(data) {
-				console.log('sucess', data);
 				resolve(data);
 			},
 			function(err) {
