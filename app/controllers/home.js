@@ -27,13 +27,16 @@ homeController.get('', function (req, res) {
 			event.type === Events.Types.CODING;
 	});
 
-	Promise.all([qEvents, qSessions]).then(function(results) {
-		var event = results[0];
-		var sessions = results[1];
-
+	Promise.all([qEvents, qSessions])
+	.spread(function(event, sessions) {
 		var eventData;
 		if(event){
 			eventData = event.toJSON();
+			var eventDate = moment(event.get('date'));
+			if (eventDate.isBefore(moment())) {
+					eventData.status = 'finished';
+			}
+
 			eventData.date = moment( event.get('date') ).lang('es').format('MMMM DD - hh:mm a');
 		}
 

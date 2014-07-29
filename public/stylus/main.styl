@@ -3,7 +3,6 @@ beerJsBlue = #b2d1e7
 chelaFont = 'Source Sans Pro', sans-serif
 
 body
-	text-align justify
 	padding 50px 0 0
 	background darken(beerJsBlue, 20%)
 	font-family: chelaFont
@@ -16,15 +15,15 @@ body.home
 		height 100%
 		width 100%
 
+		h1
+			font-weight 900
+
 	.footer
-		height 100px
+		height 85px
 		position fixed
 		width 100%
 		bottom 0
 		background: white;
-
-h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6
-	font-family: Montserrat
 
 h1 img
 	max-width: 100%
@@ -60,7 +59,7 @@ h1 img
 	font-weight: normal
 	color: white
 	.logo
-		margin-top 50px
+		margin-top 20px
 		text-align center
 		font-size 20px
 
@@ -71,14 +70,17 @@ h1 img
 		max-width 25em
 
 	.next-event
-		margin-top: 50px;
+		margin-top: 20px;
 
 		> div
 			line-height 28px
 			margin-bottom 12px
 
-		.event-info
-			margin-bottom: 40px;
+	.event-info
+		margin-bottom 40px
+
+	.next-event-date
+		text-transform capitalize
 
 .main
 	padding-bottom 48px
