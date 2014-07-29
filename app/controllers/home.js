@@ -38,7 +38,7 @@ homeController.get('', function (req, res) {
 		}
 
 		sessions.forEach(function(session){
-			session.set('time', moment( event.get('date') + ' ' + event.get('hour_start') ).lang('es').format('MMMM DD - hh:mm a') );
+			session.set('time', moment( session.get('date') + ' ' + session.get('hour_start') ).lang('es').format('MMMM DD - hh:mm a') );
 		});
 
 		res.render('home',{
