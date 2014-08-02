@@ -37,7 +37,7 @@ homeController.get('', function (req, res) {
 					eventData.status = 'finished';
 			}
 
-			eventData.date = moment( event.get('date') ).lang('es').format('MMMM DD - hh:mm a');
+			eventData.date = moment( event.get('date') + ' ' + event.get('hour_start') ).lang('es').format('MMMM DD - hh:mm a');
 		}
 
 		sessions.forEach(function(session){
