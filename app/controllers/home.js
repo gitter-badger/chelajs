@@ -34,7 +34,7 @@ homeController.get('', function (req, res) {
 			eventData = event.toJSON();
 			var eventDate = moment(event.get('date'));
 			if (eventDate.isBefore(moment())) {
-					eventData.status = 'finished';
+					// eventData.status = 'finished';
 			}
 
 			eventData.date = moment( event.get('date') + ' ' + event.get('hour_start') ).lang('es').format('MMMM DD - hh:mm a');
