@@ -43,22 +43,6 @@
 				</a>
 			</div>
 			<div class="navbar-collapse collapse">
-				{% if user %}
-				<div class="navbar-right">
-					<p class="navbar-text">
-						<a href="/perfil">
-							<img class="avatar" src="{{ user.data.avatar_url }}">
-							<span>{{ user.username }}</span>
-						</a>
-						<span>|</span>
-						<span><a class="log-out" href="/log-out">Log out <i class="fa fa-caret-square-o-right"></i></a></span>
-					</p>
-				</div>
-				{% else %}
-				<div class="navbar-form navbar-right" >
-					<a href="/auth/github" class="btn btn-primary"><i class="fa fa-github"></i> Ingresa con Github</a></a>
-				</div>
-				{% endif %}
 			</div>
 		</div>
 	</div>

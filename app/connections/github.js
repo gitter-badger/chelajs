@@ -5,6 +5,8 @@ var passport = require('passport'),
 var Users = require('../collections/users');
 
 var connection = function (server) {
+        console.log('github',conf.github);
+
 	passport.use(new GitHubStrategy({
 			clientID: conf.github.clientID,
 			clientSecret: conf.github.clientSecret,
